@@ -1,10 +1,10 @@
-package com.github.dapeng.handler;
+package com.github.dapeng.netty.handler;
 
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.config.ContainerStatus;
-import com.github.dapeng.match.AntPathMatcher;
-import com.github.dapeng.match.PathMatcher;
-import com.github.dapeng.request.RequestParser;
+import com.github.dapeng.netty.match.AntPathMatcher;
+import com.github.dapeng.netty.match.PathMatcher;
+import com.github.dapeng.netty.request.RequestParser;
 import com.github.dapeng.util.PostUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -45,18 +45,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
     protected void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
+
         dispatchRequest(request, ctx);
-
-/*
-        Map<String, String> requestParams = RequestParser.fastParse(request);
-        if (logger.isDebugEnabled()) {
-            StringBuilder logBuilder = new StringBuilder();
-            requestParams.forEach((k, v) -> logBuilder.append("[K: ").append(k).append(", V: ").append(v).append("\n"));
-            logger.debug("request参数信息: " + logBuilder.toString());
-        }*/
-        // buildRequest
-
-
     }
 
     private void dispatchRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -81,8 +71,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             String serviceName = pathVariableMap.get("serviceName");
             String version = pathVariableMap.get("version");
             String methodName = pathVariableMap.get("methodName");
-//            String parameter = pathVariableMap.get("parameter");/{parameter:[\s\S]*}
-            String parameter = RequestParser.fastParse(request, "parameter");
+            String parameter = RequestParser.fastParseParam(request, "parameter");
             logger.info("parameter info: {}", parameter);
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
