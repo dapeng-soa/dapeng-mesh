@@ -679,7 +679,7 @@ public class AntPathMatcher implements PathMatcher {
         }
 
         /**
-         * Main entry point.
+         * HttpServerApplication entry point.
          *
          * @return {@code true} if the string matches against the pattern, or {@code false} otherwise.
          */
