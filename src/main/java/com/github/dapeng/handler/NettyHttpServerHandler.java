@@ -71,8 +71,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             return;
         }
         send(ctx, "不符合的请求", HttpResponseStatus.OK);
-
-
     }
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -100,6 +98,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
                 }
             });
         }
+        send(ctx, "不合法的请求", HttpResponseStatus.OK);
 
     }
 
