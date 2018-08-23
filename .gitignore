@@ -4,3 +4,5 @@ target/
 netty-gateway.iml
 logs/
 docker/apps
+src/main/.DS_Store
+

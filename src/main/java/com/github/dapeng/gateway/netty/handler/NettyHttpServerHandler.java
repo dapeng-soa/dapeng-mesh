@@ -145,5 +145,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage(), cause);
         sendHttpResponse(ctx, "服务器错误: " + cause.getMessage(), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        ctx.close();
     }
 }
