@@ -50,7 +50,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     protected void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
         dispatchRequest(request, ctx);
 
-        checkRequestType(request, ctx);
+//        checkRequestType(request, ctx);
 
         Map<String, String> requestParams = RequestParser.fastParse(request);
         if (logger.isDebugEnabled()) {
@@ -128,7 +128,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
 
-    private void checkRequestType(FullHttpRequest request, ChannelHandlerContext ctx) {
+    /*private void checkRequestType(FullHttpRequest request, ChannelHandlerContext ctx) {
         //获取参数
         ByteBuf buf = request.content();
 
@@ -183,7 +183,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             return;
         }
 
-    }
+    }*/
 
 
     private void send(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
