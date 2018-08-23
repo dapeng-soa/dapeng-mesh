@@ -15,7 +15,6 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,8 +30,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private PathMatcher pathMatcher = new AntPathMatcher();
     private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
 
-
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         try {
@@ -43,7 +40,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         }
     }
 
-    protected void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
+    private void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
 
         dispatchRequest(request, ctx);
     }
@@ -90,9 +87,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             });
         } else {
             sendHttpResponse(ctx, "不合法的请求", HttpResponseStatus.OK);
-
         }
-
     }
 
 
@@ -111,12 +106,12 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     /**
      * 返回信息给前端 http
      *
-     * @param ctx
-     * @param context
-     * @param status
+     * @param ctx     handler's context
+     * @param content msg's info
+     * @param status  http status
      */
-    private void sendHttpResponse(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(context, CharsetUtil.UTF_8));
+    private void sendHttpResponse(ChannelHandlerContext ctx, String content, HttpResponseStatus status) {
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -124,7 +119,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         logger.info("连接的客户端地址:{}", ctx.channel().remoteAddress());
-        ctx.writeAndFlush("客户端" + InetAddress.getLocalHost().getHostName() + "成功与服务端建立连接！ ");
+//        ctx.writeAndFlush("客户端" + InetAddress.getLocalHost().getHostName() + "成功与服务端建立连接！ ");
         super.channelActive(ctx);
     }
 

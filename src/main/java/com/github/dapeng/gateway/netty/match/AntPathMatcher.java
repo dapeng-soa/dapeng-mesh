@@ -92,7 +92,7 @@ public class AntPathMatcher implements PathMatcher {
 
     private final Map<String, String[]> tokenizedPatternCache = new ConcurrentHashMap<>(256);
 
-    final Map<String, AntPathStringMatcher> stringMatcherCache = new ConcurrentHashMap<>(256);
+    private final Map<String, AntPathStringMatcher> stringMatcherCache = new ConcurrentHashMap<>(256);
 
 
     /**

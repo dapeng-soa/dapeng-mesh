@@ -24,7 +24,7 @@ public class NettyHttpServer {
     private final int port;
 
     public NettyHttpServer(int port) {
-        this.port = port;
+        this.port = port > 0 ? port : 0;
     }
 
     public void start() {
@@ -54,7 +54,6 @@ public class NettyHttpServer {
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            // 绑定端口，开始接收进来的连接
             ChannelFuture future = bootstrap.bind(port).sync();
 
             logger.info("NettyServer start listen at {}", port);
