@@ -39,6 +39,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
+            send(ctx, "处理请求失败!", HttpResponseStatus.INTERNAL_SERVER_ERROR);
             logger.error("处理请求失败!" + e.getMessage(), e);
         }
     }
@@ -82,7 +83,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             String methodName = pathVariableMap.get("methodName");
 //            String parameter = pathVariableMap.get("parameter");/{parameter:[\s\S]*}
             String parameter = RequestParser.fastParse(request, "parameter");
-            logger.info("parameter info: {}",parameter);
+            logger.info("parameter info: {}", parameter);
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
 
@@ -99,8 +100,10 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
                     send(ctx, response, HttpResponseStatus.OK);
                 }
             });
+        } else {
+            send(ctx, "不合法的请求", HttpResponseStatus.OK);
+
         }
-        send(ctx, "不合法的请求", HttpResponseStatus.OK);
 
     }
 
