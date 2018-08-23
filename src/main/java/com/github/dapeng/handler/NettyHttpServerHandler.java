@@ -117,73 +117,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
 
-    /**
-     * call rpc
-     */
-    private void callRpc() {
-
-
-    }
-
-
-    /*private void checkRequestType(FullHttpRequest request, ChannelHandlerContext ctx) {
-        //获取参数
-        ByteBuf buf = request.content();
-
-        String body = buf.toString(CharsetUtil.UTF_8);
-
-        //获取请求方法
-        HttpMethod method = request.method();
-
-
-        String path = request.uri();
-
-        logger.info("path:{}", path);
-        String result;
-        //如果不是这个路径，就直接返回错误
-        if (!"/test".equalsIgnoreCase(path)) {
-            result = "非法请求!";
-            send(ctx, result, HttpResponseStatus.BAD_REQUEST);
-            return;
-        }
-        System.out.println("接收到:" + method + " 请求");
-        //如果是GET请求
-        if (HttpMethod.GET.equals(method)) {
-            //接受到的消息，做业务逻辑处理...
-            System.out.println("body:" + body);
-            result = "GET请求";
-            send(ctx, result, HttpResponseStatus.OK);
-            return;
-        }
-        //如果是POST请求
-        if (HttpMethod.POST.equals(method)) {
-            //接受到的消息，做业务逻辑处理...
-            System.out.println("body:" + body);
-            result = "POST请求";
-            send(ctx, result, HttpResponseStatus.OK);
-            return;
-        }
-
-        //如果是PUT请求
-        if (HttpMethod.PUT.equals(method)) {
-            //接受到的消息，做业务逻辑处理...
-            System.out.println("body:" + body);
-            result = "PUT请求";
-            send(ctx, result, HttpResponseStatus.OK);
-            return;
-        }
-        //如果是DELETE请求
-        if (HttpMethod.DELETE.equals(method)) {
-            //接受到的消息，做业务逻辑处理...
-            System.out.println("body:" + body);
-            result = "DELETE请求";
-            send(ctx, result, HttpResponseStatus.OK);
-            return;
-        }
-
-    }*/
-
-
     private void send(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(context, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
@@ -195,5 +128,11 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         logger.info("连接的客户端地址:{}", ctx.channel().remoteAddress());
         ctx.writeAndFlush("客户端" + InetAddress.getLocalHost().getHostName() + "成功与服务端建立连接！ ");
         super.channelActive(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage(), cause);
+        send(ctx, cause.getMessage(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,5 +1,5 @@
 
 .gitignore
-target
+target/
 .idea
 netty-gateway.iml
