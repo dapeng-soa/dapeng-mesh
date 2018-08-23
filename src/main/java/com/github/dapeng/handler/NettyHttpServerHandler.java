@@ -6,7 +6,6 @@ import com.github.dapeng.match.AntPathMatcher;
 import com.github.dapeng.match.PathMatcher;
 import com.github.dapeng.request.RequestParser;
 import com.github.dapeng.util.PostUtil;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -50,14 +49,13 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     protected void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
         dispatchRequest(request, ctx);
 
-//        checkRequestType(request, ctx);
-
+/*
         Map<String, String> requestParams = RequestParser.fastParse(request);
         if (logger.isDebugEnabled()) {
             StringBuilder logBuilder = new StringBuilder();
             requestParams.forEach((k, v) -> logBuilder.append("[K: ").append(k).append(", V: ").append(v).append("\n"));
             logger.debug("request参数信息: " + logBuilder.toString());
-        }
+        }*/
         // buildRequest
 
 

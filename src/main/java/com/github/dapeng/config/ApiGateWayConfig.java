@@ -23,7 +23,7 @@ public class ApiGateWayConfig {
             LOGGER.info("zk host in the environment is already setter...");
         } else {
             String defaultHost = "127.0.0.1:2181";
-            System.setProperty(PROP_SOA_ZOOKEEPER_HOST, "127.0.0.1:2181");
+            System.setProperty(PROP_SOA_ZOOKEEPER_HOST, defaultHost);
             LOGGER.info("zk host in the environment is not found,setting it with spring boot application, host is {}", defaultHost);
         }
         new ZkBootstrap().init();
