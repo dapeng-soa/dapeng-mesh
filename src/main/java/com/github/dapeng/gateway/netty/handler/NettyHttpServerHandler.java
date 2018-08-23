@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * desc: NettyHttpServerHandler
@@ -29,6 +31,10 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private Logger logger = LoggerFactory.getLogger(getClass());
     private PathMatcher pathMatcher = new AntPathMatcher();
     private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
+    private final String DEFAULT_MATCH_AUTH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{apiKey:[\\s\\S]*}";
+
+    private final Pattern pathPattern = Pattern.compile("([\\s\\S]*)\\?([\\s\\S]*)");
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
@@ -62,6 +68,13 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
+       /* Matcher matcher = pathPattern.matcher(uri);
+        if (matcher.matches()) {
+            logger.info(matcher.group(0));
+            logger.info(matcher.group(1));
+            logger.info(matcher.group(2));
+        }*/
+
         if (pathMatcher.match(DEFAULT_MATCH, uri)) {
             Map<String, String> pathVariableMap = pathMatcher.extractUriTemplateVariables(DEFAULT_MATCH, request.uri());
             String serviceName = pathVariableMap.get("serviceName");
@@ -102,6 +115,21 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         }
     }
 
+    /*private String getPathWithArgsUri(String uri) {
+        String path;
+        Map<String, String> args;
+        Matcher matcher = pathPattern.matcher(uri);
+        if (matcher.matches()) {
+            path = matcher.group(1);
+            String strArgs = matcher.group(2);
+            Arrays.stream(strArgs.split("&")).map(kv-> {
+                kv.split("=")
+
+            )
+        }
+
+        return "";
+    }*/
 
     /**
      * 返回信息给前端 http
