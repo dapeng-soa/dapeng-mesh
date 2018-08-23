@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @since 2018年08月23日 上午9:54
  */
 public class NettyHttpServer {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(NettyHttpServer.class);
 
     private final int port;
 
