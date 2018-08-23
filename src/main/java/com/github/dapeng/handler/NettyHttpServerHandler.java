@@ -40,9 +40,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             doService(httpRequest, ctx);
         } catch (Exception e) {
             logger.error("处理请求失败!" + e.getMessage(), e);
-        } finally {
-            //释放请求
-            httpRequest.release();
         }
     }
 
@@ -66,12 +63,14 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         boolean isGet = HttpMethod.GET.equals(method);
         if (isGet || HttpMethod.HEAD.equals(method)) {
             handlerGetAndHead(request, ctx);
+            return;
         }
         boolean isPost = HttpMethod.POST.equals(method);
         if (isPost) {
             handlerPostRequest(request, ctx);
-
+            return;
         }
+        send(ctx, "不符合的请求", HttpResponseStatus.OK);
 
 
     }
