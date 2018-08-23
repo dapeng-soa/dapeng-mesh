@@ -63,7 +63,7 @@ public final class RequestParser {
         String content = httpRequest.content().toString(StandardCharsets.UTF_8);
         QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
         Map<String, List<String>> parameters = qs.parameters();
-        String value = parameters.get("condition").get(0);
+        String value = parameters.get(condition).get(0);
 
         return value;
     }
