@@ -1,4 +1,4 @@
-package com.github.dapeng.config;
+package com.github.dapeng.gateway.config;
 
 import com.github.dapeng.openapi.cache.ZkBootstrap;
 import org.slf4j.Logger;

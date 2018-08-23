@@ -1,4 +1,4 @@
-package com.github.dapeng.request;
+package com.github.dapeng.gateway.netty.request;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -56,6 +56,22 @@ public final class RequestParser {
         params.put("parameterTypesString", parameterTypesString);
         params.put("parameter", parameter);
         return params;
+    }
+
+
+    /**
+     * 解析 http 请求携带参数
+     * @param httpRequest
+     * @param condition
+     * @return
+     */
+    public static String fastParseParam(FullHttpRequest httpRequest, String condition) {
+        String content = httpRequest.content().toString(StandardCharsets.UTF_8);
+        QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
+        Map<String, List<String>> parameters = qs.parameters();
+        String value = parameters.get(condition).get(0);
+
+        return value;
     }
 
     public static String cheatParse(FullHttpRequest req) {

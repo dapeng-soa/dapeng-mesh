@@ -1,12 +1,11 @@
-package com.github.dapeng;
+package com.github.dapeng.gateway.netty;
 
-import com.github.dapeng.handler.NettyHttpServerHandler;
+import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
@@ -48,7 +47,7 @@ public class NettyHttpServer {
                             // 服务端业务逻辑
                             ph.addLast("handler", new NettyHttpServerHandler());
                             // 压缩
-                            ph.addLast("compressor", new HttpContentCompressor());
+//                            ph.addLast("compressor", new HttpContentCompressor());
                         }
 
                     })

@@ -1,4 +1,4 @@
-package com.github.dapeng.util;
+package com.github.dapeng.gateway.util;
 
 import com.github.dapeng.client.netty.JsonPost;
 import com.github.dapeng.core.InvocationContext;

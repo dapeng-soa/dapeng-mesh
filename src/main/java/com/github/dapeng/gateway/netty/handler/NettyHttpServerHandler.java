@@ -1,11 +1,11 @@
-package com.github.dapeng.handler;
+package com.github.dapeng.gateway.netty.handler;
 
 import com.github.dapeng.core.SoaCode;
-import com.github.dapeng.config.ContainerStatus;
-import com.github.dapeng.match.AntPathMatcher;
-import com.github.dapeng.match.PathMatcher;
-import com.github.dapeng.request.RequestParser;
-import com.github.dapeng.util.PostUtil;
+import com.github.dapeng.gateway.config.ContainerStatus;
+import com.github.dapeng.gateway.netty.match.AntPathMatcher;
+import com.github.dapeng.gateway.netty.match.PathMatcher;
+import com.github.dapeng.gateway.netty.request.RequestParser;
+import com.github.dapeng.gateway.util.PostUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,7 +30,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private PathMatcher pathMatcher = new AntPathMatcher();
 
 
-    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{parameter:[\\s\\S]*}";
+    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
 
 
     @Override
@@ -39,23 +39,14 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
+            send(ctx, "处理请求失败!", HttpResponseStatus.INTERNAL_SERVER_ERROR);
             logger.error("处理请求失败!" + e.getMessage(), e);
         }
     }
 
     protected void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
+
         dispatchRequest(request, ctx);
-
-/*
-        Map<String, String> requestParams = RequestParser.fastParse(request);
-        if (logger.isDebugEnabled()) {
-            StringBuilder logBuilder = new StringBuilder();
-            requestParams.forEach((k, v) -> logBuilder.append("[K: ").append(k).append(", V: ").append(v).append("\n"));
-            logger.debug("request参数信息: " + logBuilder.toString());
-        }*/
-        // buildRequest
-
-
     }
 
     private void dispatchRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -71,8 +62,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             return;
         }
         send(ctx, "不符合的请求", HttpResponseStatus.OK);
-
-
     }
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -82,7 +71,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             String serviceName = pathVariableMap.get("serviceName");
             String version = pathVariableMap.get("version");
             String methodName = pathVariableMap.get("methodName");
-            String parameter = pathVariableMap.get("parameter");
+            String parameter = RequestParser.fastParseParam(request, "parameter");
+            logger.info("parameter info: {}", parameter);
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
 
@@ -99,6 +89,9 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
                     send(ctx, response, HttpResponseStatus.OK);
                 }
             });
+        } else {
+            send(ctx, "不合法的请求", HttpResponseStatus.OK);
+
         }
 
     }
