@@ -97,4 +97,99 @@
         </dependency>
 
     </dependencies>
+
+
+    <build>
+        <plugins>
+            <!--shade plugins-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.github.dapeng.gateway.HttpServerApplication</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy files</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <!-- copy child's output files into target/docker -->
+                            <tasks>
+                                <copy file="${project.build.directory}/dapeng-mesh-2.0.4.jar"
+                                      todir="${basedir}/docker/apps">
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean up the docker folder</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <!-- delete folder under docker -->
+                            <tasks>
+                                <delete dir="${basedir}/docker/apps"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.10</version>
+                <configuration>
+                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:2.0.4</imageName>
+                    <dockerDirectory>${basedir}/docker</dockerDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
 </project>

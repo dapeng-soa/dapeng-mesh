@@ -26,20 +26,19 @@ import java.util.concurrent.CompletableFuture;
  * @since 2018年08月23日 上午10:01
  */
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
     private Logger logger = LoggerFactory.getLogger(getClass());
     private PathMatcher pathMatcher = new AntPathMatcher();
-
-
     private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
+
 
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
-        // doService
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
-            send(ctx, "处理请求失败!", HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            sendHttpResponse(ctx, "处理请求失败!", HttpResponseStatus.INTERNAL_SERVER_ERROR);
             logger.error("处理请求失败!" + e.getMessage(), e);
         }
     }
@@ -61,7 +60,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             handlerPostRequest(request, ctx);
             return;
         }
-        send(ctx, "不符合的请求", HttpResponseStatus.OK);
+        sendHttpResponse(ctx, "不符合的请求", HttpResponseStatus.OK);
     }
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -79,18 +78,18 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {
                     String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
-                    send(ctx, resp, HttpResponseStatus.OK);
+                    sendHttpResponse(ctx, resp, HttpResponseStatus.OK);
                 } else {
                     if (result.contains("status")) {
-                        send(ctx, result, HttpResponseStatus.OK);
+                        sendHttpResponse(ctx, result, HttpResponseStatus.OK);
                         return;
                     }
                     String response = "{}".equals(result) ? "{\"status\":1}" : result.substring(0, result.lastIndexOf('}')) + ",\"status\":1}";
-                    send(ctx, response, HttpResponseStatus.OK);
+                    sendHttpResponse(ctx, response, HttpResponseStatus.OK);
                 }
             });
         } else {
-            send(ctx, "不合法的请求", HttpResponseStatus.OK);
+            sendHttpResponse(ctx, "不合法的请求", HttpResponseStatus.OK);
 
         }
 
@@ -101,15 +100,22 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         String uri = request.uri();
         if ("/health/check".equals(uri)) {
             logger.debug("health check,container status: " + ContainerStatus.GREEN);
-            send(ctx, "GateWay is running", HttpResponseStatus.OK);
+            sendHttpResponse(ctx, "GateWay is running", HttpResponseStatus.OK);
         } else {
             logger.debug("not support url request, uri: {}", uri);
-            send(ctx, "不支持的请求类型", HttpResponseStatus.OK);
+            sendHttpResponse(ctx, "不支持的请求类型", HttpResponseStatus.OK);
         }
     }
 
 
-    private void send(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
+    /**
+     * 返回信息给前端 http
+     *
+     * @param ctx
+     * @param context
+     * @param status
+     */
+    private void sendHttpResponse(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(context, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -125,6 +131,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage(), cause);
-        send(ctx, cause.getMessage(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        sendHttpResponse(ctx, cause.getMessage(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
     }
 }

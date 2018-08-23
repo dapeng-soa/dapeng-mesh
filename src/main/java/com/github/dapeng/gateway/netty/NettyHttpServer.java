@@ -57,7 +57,7 @@ public class NettyHttpServer {
             // 绑定端口，开始接收进来的连接
             ChannelFuture future = bootstrap.bind(port).sync();
 
-            System.out.println("Server start listen at " + port);
+            logger.info("NettyServer start listen at {}", port);
             future.channel().closeFuture().sync();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
