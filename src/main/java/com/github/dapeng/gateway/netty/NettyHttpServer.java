@@ -1,12 +1,11 @@
-package com.github.dapeng.netty;
+package com.github.dapeng.gateway.netty;
 
-import com.github.dapeng.netty.handler.NettyHttpServerHandler;
+import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;

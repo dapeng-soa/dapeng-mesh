@@ -1,7 +1,7 @@
-package com.github.dapeng;
+package com.github.dapeng.gateway;
 
-import com.github.dapeng.config.ApiGateWayConfig;
-import com.github.dapeng.netty.NettyHttpServer;
+import com.github.dapeng.gateway.config.ApiGateWayConfig;
+import com.github.dapeng.gateway.netty.NettyHttpServer;
 
 /**
  * desc: HttpServerApplication

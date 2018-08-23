@@ -1,4 +1,4 @@
-package com.github.dapeng.netty.request;
+package com.github.dapeng.gateway.netty.request;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;

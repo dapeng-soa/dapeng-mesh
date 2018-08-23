@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.dapeng.netty.match;
+package com.github.dapeng.gateway.netty.match;
 
-import com.github.dapeng.util.GateWayUtil;
+import com.github.dapeng.gateway.util.GateWayUtil;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
