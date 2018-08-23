@@ -82,6 +82,12 @@
             <version>1.7.25</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.0.4.RELEASE</version>
+        </dependency>
+
         <!--open-api -->
         <dependency>
             <groupId>com.github.dapeng</groupId>

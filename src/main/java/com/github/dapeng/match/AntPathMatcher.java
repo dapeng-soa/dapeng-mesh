@@ -17,7 +17,6 @@
 package com.github.dapeng.match;
 
 import com.github.dapeng.util.GateWayUtil;
-import org.springframework.util.StringUtils;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -475,8 +474,8 @@ public class AntPathMatcher implements PathMatcher {
      */
     @Override
     public String extractPathWithinPattern(String pattern, String path) {
-        String[] patternParts = StringUtils.tokenizeToStringArray(pattern, this.pathSeparator, this.trimTokens, true);
-        String[] pathParts = StringUtils.tokenizeToStringArray(path, this.pathSeparator, this.trimTokens, true);
+        String[] patternParts = GateWayUtil.tokenizeToStringArray(pattern, this.pathSeparator, this.trimTokens, true);
+        String[] pathParts = GateWayUtil.tokenizeToStringArray(path, this.pathSeparator, this.trimTokens, true);
         StringBuilder builder = new StringBuilder();
         boolean pathStarted = false;
 
@@ -537,13 +536,13 @@ public class AntPathMatcher implements PathMatcher {
      */
     @Override
     public String combine(String pattern1, String pattern2) {
-        if (!StringUtils.hasText(pattern1) && !StringUtils.hasText(pattern2)) {
+        if (!GateWayUtil.hasText(pattern1) && !GateWayUtil.hasText(pattern2)) {
             return "";
         }
-        if (!StringUtils.hasText(pattern1)) {
+        if (!GateWayUtil.hasText(pattern1)) {
             return pattern2;
         }
-        if (!StringUtils.hasText(pattern2)) {
+        if (!GateWayUtil.hasText(pattern2)) {
             return pattern1;
         }
 
@@ -737,6 +736,7 @@ public class AntPathMatcher implements PathMatcher {
          * @return a negative integer, zero, or a positive integer as pattern1 is
          * more specific, equally specific, or less specific than pattern2.
          */
+        @Override
         public int compare(String pattern1, String pattern2) {
             PatternInfo info1 = new PatternInfo(pattern1);
             PatternInfo info2 = new PatternInfo(pattern2);
