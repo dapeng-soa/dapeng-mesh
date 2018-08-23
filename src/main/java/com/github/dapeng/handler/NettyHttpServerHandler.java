@@ -30,7 +30,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private PathMatcher pathMatcher = new AntPathMatcher();
 
 
-    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{parameter:[\\s\\S]*}";
+    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
 
 
     @Override
@@ -80,7 +80,9 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             String serviceName = pathVariableMap.get("serviceName");
             String version = pathVariableMap.get("version");
             String methodName = pathVariableMap.get("methodName");
-            String parameter = pathVariableMap.get("parameter");
+//            String parameter = pathVariableMap.get("parameter");/{parameter:[\s\S]*}
+            String parameter = RequestParser.fastParse(request, "parameter");
+            logger.info("parameter info: {}",parameter);
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
 

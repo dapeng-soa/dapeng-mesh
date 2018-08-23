@@ -58,6 +58,16 @@ public final class RequestParser {
         return params;
     }
 
+
+    public static String fastParse(FullHttpRequest httpRequest, String condition) {
+        String content = httpRequest.content().toString(StandardCharsets.UTF_8);
+        QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
+        Map<String, List<String>> parameters = qs.parameters();
+        String value = parameters.get("condition").get(0);
+
+        return value;
+    }
+
     public static String cheatParse(FullHttpRequest req) {
         req.retain();
         // 跳过parameter之前的部分
