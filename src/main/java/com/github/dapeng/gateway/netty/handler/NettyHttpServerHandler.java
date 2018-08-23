@@ -30,7 +30,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private PathMatcher pathMatcher = new AntPathMatcher();
-    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
+//    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
     private final String DEFAULT_MATCH_AUTH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{apiKey:[\\s\\S]*}";
 
     private final Pattern pathPattern = Pattern.compile("([\\s\\S]*)\\?([\\s\\S]*)");
@@ -75,8 +75,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             logger.info(matcher.group(2));
         }*/
 
-        if (pathMatcher.match(DEFAULT_MATCH, uri)) {
-            Map<String, String> pathVariableMap = pathMatcher.extractUriTemplateVariables(DEFAULT_MATCH, request.uri());
+        if (pathMatcher.match(DEFAULT_MATCH_AUTH, uri)) {
+            Map<String, String> pathVariableMap = pathMatcher.extractUriTemplateVariables(DEFAULT_MATCH_AUTH, request.uri());
             String serviceName = pathVariableMap.get("serviceName");
             String version = pathVariableMap.get("version");
             String methodName = pathVariableMap.get("methodName");
@@ -154,6 +154,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error(cause.getMessage(), cause);
-        sendHttpResponse(ctx, cause.getMessage(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        sendHttpResponse(ctx, "服务器错误", HttpResponseStatus.INTERNAL_SERVER_ERROR);
     }
 }
