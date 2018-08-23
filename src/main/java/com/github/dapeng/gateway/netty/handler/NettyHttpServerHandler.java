@@ -70,7 +70,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
 
-
         if (pathMatcher.match(DEFAULT_MATCH_AUTH, uri)) {
             Map<String, String> pathVariableMap = pathMatcher.extractUriTemplateVariables(DEFAULT_MATCH_AUTH, request.uri());
             String serviceName = pathVariableMap.get("serviceName");
