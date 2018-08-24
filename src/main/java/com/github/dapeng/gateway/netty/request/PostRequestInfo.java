@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * desc: TODO
+ * desc: PostRequestInfo
  *
  * @author hz.lei
  * @since 2018年08月24日 下午3:27
