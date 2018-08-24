@@ -131,7 +131,7 @@
                         <configuration>
                             <!-- copy child's output files into target/docker -->
                             <tasks>
-                                <copy file="${project.build.directory}/dapeng-mesh-2.0.4-jar-with-dependencies.jar"
+                                <copy file="${project.build.directory}/dapeng-mesh-${version}-jar-with-dependencies.jar"
                                       todir="${basedir}/docker/apps">
                                 </copy>
                             </tasks>
