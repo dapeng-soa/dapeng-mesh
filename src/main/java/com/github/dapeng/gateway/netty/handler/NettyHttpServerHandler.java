@@ -76,7 +76,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             String version = pathVariableMap.get("version");
             String methodName = pathVariableMap.get("methodName");
             String parameter = RequestParser.fastParseParam(request, "parameter");
-            logger.info("parameter info: {}", parameter);
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
 
@@ -118,6 +117,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * @param status  http status
      */
     private void sendHttpResponse(ChannelHandlerContext ctx, String content, FullHttpRequest request, HttpResponseStatus status) {
+
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
@@ -126,8 +126,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         } else {
             boolean isKeepAlive = HttpUtil.isKeepAlive(request);
             if (isKeepAlive) {
-                response.headers().set(HttpHeaderNames.CONNECTION,
-                        HttpHeaderValues.KEEP_ALIVE);
+                response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                 ctx.writeAndFlush(response);
             } else {
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);

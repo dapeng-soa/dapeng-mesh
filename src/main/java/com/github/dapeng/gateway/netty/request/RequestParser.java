@@ -22,7 +22,6 @@ public final class RequestParser {
 
     private RequestParser() {
     }
-
     /**
      * 解析请求参数
      */
@@ -61,6 +60,7 @@ public final class RequestParser {
 
     /**
      * 解析 http 请求携带参数
+     *
      * @param httpRequest
      * @param condition
      * @return
@@ -73,14 +73,4 @@ public final class RequestParser {
 
         return value;
     }
-
-    public static String cheatParse(FullHttpRequest req) {
-        req.retain();
-        // 跳过parameter之前的部分
-        req.content().skipBytes(136);
-        String parameter = req.content().readCharSequence(req.content().readableBytes(), StandardCharsets.UTF_8).toString();
-        req.content().release();
-        return parameter;
-    }
-
 }
