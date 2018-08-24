@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ApiGateWayConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiGateWayConfig.class);
-    public static final String ENV_SOA_ZOOKEEPER_HOST = "soa_zookeeper_host";
+    private static final String ENV_SOA_ZOOKEEPER_HOST = "soa_zookeeper_host";
 
-    public static final String PROP_SOA_ZOOKEEPER_HOST = "soa.zookeeper.host";
+    private static final String PROP_SOA_ZOOKEEPER_HOST = "soa.zookeeper.host";
 
 
     public void afterPropertiesSet() throws Exception {
