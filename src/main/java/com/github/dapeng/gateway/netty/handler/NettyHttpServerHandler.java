@@ -6,6 +6,7 @@ import com.github.dapeng.gateway.netty.match.AntPathMatcher;
 import com.github.dapeng.gateway.netty.match.PathMatcher;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.PostUtil;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,6 +31,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private PathMatcher pathMatcher = new AntPathMatcher();
 
 
+    // /api/com.foo/1.0.0/sayHello?name=
     private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
 
 
@@ -39,6 +41,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
+            // todo 需要返回json格式
             send(ctx, "处理请求失败!", HttpResponseStatus.INTERNAL_SERVER_ERROR);
             logger.error("处理请求失败!" + e.getMessage(), e);
         }
@@ -110,6 +113,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
 
     private void send(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
+        ByteBuf byteBuf = ctx.alloc().buffer(context.length());
+        byteBuf.writeBytes(context.getBytes(CharsetUtil.UTF_8));
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(context, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);

@@ -3,3 +3,4 @@ target/
 .idea
 netty-gateway.iml
 logs/
+.DS_Store
