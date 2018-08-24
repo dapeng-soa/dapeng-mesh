@@ -3,6 +3,7 @@ target/
 .idea
 netty-gateway.iml
 logs/
+.DS_Store
 docker/apps
 src/main/.DS_Store
 

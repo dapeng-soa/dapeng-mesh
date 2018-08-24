@@ -24,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
  * @since 2018年08月23日 上午10:01
  */
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
 
     @Override

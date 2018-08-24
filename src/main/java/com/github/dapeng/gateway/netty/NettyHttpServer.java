@@ -42,6 +42,9 @@ public class NettyHttpServer {
         this.port = port > 0 ? port : 0;
     }
 
+    /**
+     * todo 一些handler是否可以shareable？
+     */
     public void start() {
         bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup();
