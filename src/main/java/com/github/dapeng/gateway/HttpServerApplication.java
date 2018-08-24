@@ -18,6 +18,7 @@ public class HttpServerApplication {
         new ApiGateWayConfig().afterPropertiesSet();
         NettyHttpServer server = new NettyHttpServer(9000);
         logLogBanner();
+        server.registerShutdownHook();
         server.start();
     }
 
@@ -25,12 +26,12 @@ public class HttpServerApplication {
     private static void logLogBanner() {
         String builder =
                 "\n\n ____                                                   __  __                _     " +
-                "\n|  _ \\    __ _   _ __     ___   _ __     __ _          |  \\/  |   ___   ___  | |__  " +
-                "\n| | | |  / _` | | '_ \\   / _ \\ | '_ \\   / _` |  _____  | |\\/| |  / _ \\ / __| | '_ \\ " +
-                "\n| |_| | | (_| | | |_) | |  __/ | | | | | (_| | |_____| | |  | | |  __/ \\__ \\ | | | |" +
-                "\n|____/   \\__,_| | .__/   \\___| |_| |_|  \\__, |         |_|  |_|  \\___| |___/ |_| |_|" +
-                "\n                |_|                     |___/                                        " +
-                "\n\n ";
+                        "\n|  _ \\    __ _   _ __     ___   _ __     __ _          |  \\/  |   ___   ___  | |__  " +
+                        "\n| | | |  / _` | | '_ \\   / _ \\ | '_ \\   / _` |  _____  | |\\/| |  / _ \\ / __| | '_ \\ " +
+                        "\n| |_| | | (_| | | |_) | |  __/ | | | | | (_| | |_____| | |  | | |  __/ \\__ \\ | | | |" +
+                        "\n|____/   \\__,_| | .__/   \\___| |_| |_|  \\__, |         |_|  |_|  \\___| |___/ |_| |_|" +
+                        "\n                |_|                     |___/                                        " +
+                        "\n\n ";
         logger.info(builder);
     }
 }

@@ -22,15 +22,29 @@ import org.slf4j.LoggerFactory;
 public class NettyHttpServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyHttpServer.class);
 
+    /**
+     * Synchronization monitor for the "refresh" and "destroy"
+     */
+    private final Object startupShutdownMonitor = new Object();
+
+    /**
+     * Reference to the JVM shutdown hook, if registered
+     */
+    private Thread shutdownHook;
+
     private final int port;
+
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
+
 
     public NettyHttpServer(int port) {
         this.port = port > 0 ? port : 0;
     }
 
     public void start() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup();
         NettyLinkStateHandler linkStateHandler = new NettyLinkStateHandler();
 
         try {
@@ -67,4 +81,20 @@ public class NettyHttpServer {
         }
     }
 
+    public void registerShutdownHook() {
+        if (this.shutdownHook == null) {
+            // No shutdown hook registered yet.
+            this.shutdownHook = new Thread(() -> {
+                synchronized (startupShutdownMonitor) {
+                    if (bossGroup != null) {
+                        bossGroup.shutdownGracefully();
+                    }
+                    if (workerGroup != null) {
+                        workerGroup.shutdownGracefully();
+                    }
+                }
+            });
+            Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
+    }
 }
