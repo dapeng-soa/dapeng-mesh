@@ -1,6 +1,5 @@
 package com.github.dapeng.gateway.util;
 
-import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class GateWayUtil {
     }
 
     public static String[] tokenizeToStringArray(
-            @Nullable String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+            String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
 
         if (str == null) {
             return new String[0];

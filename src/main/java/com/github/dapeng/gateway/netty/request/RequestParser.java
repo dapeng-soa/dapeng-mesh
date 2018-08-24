@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.netty.request;
 
+import com.github.dapeng.gateway.netty.match.UrlArgumentHolder;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
@@ -8,6 +9,7 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.MemoryAttribute;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,25 +44,32 @@ public final class RequestParser {
         return params;
     }
 
-    public static Map<String, String> fastParse(FullHttpRequest httpRequest) {
+
+    public static PostRequestInfo fastParse(String prefix, String apiKey, FullHttpRequest httpRequest, List<UrlArgumentHolder.KV> arguments) {
         String content = httpRequest.content().toString(StandardCharsets.UTF_8);
         QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
         Map<String, List<String>> parameters = qs.parameters();
-        String interfaceName = parameters.get("interface").get(0);
-        String method = parameters.get("method").get(0);
-        String parameterTypesString = parameters.get("parameterTypesString").get(0);
-        String parameter = parameters.get("parameter").get(0);
-        Map<String, String> params = new HashMap<>();
-        params.put("interface", interfaceName);
-        params.put("method", method);
-        params.put("parameterTypesString", parameterTypesString);
-        params.put("parameter", parameter);
-        return params;
+
+        List<String> defaultStr = new ArrayList<>();
+        defaultStr.add("defualt");
+
+        String serviceName = parameters.getOrDefault("serviceName", defaultStr).get(0);
+        String version = parameters.getOrDefault("version", defaultStr).get(0);
+        String methodName = parameters.getOrDefault("methodName", defaultStr).get(0);
+
+        String parameter = parameters.getOrDefault("parameter", defaultStr).get(0);
+
+        String timestamp = parameters.getOrDefault("timestamp", defaultStr).get(0);
+        String secret = parameters.getOrDefault("secret", defaultStr).get(0);
+
+
+        return new PostRequestInfo(prefix, serviceName, version, methodName, apiKey, arguments);
     }
 
 
     /**
      * 解析 http 请求携带参数
+     *
      * @param httpRequest
      * @param condition
      * @return
@@ -74,13 +83,5 @@ public final class RequestParser {
         return value;
     }
 
-    public static String cheatParse(FullHttpRequest req) {
-        req.retain();
-        // 跳过parameter之前的部分
-        req.content().skipBytes(136);
-        String parameter = req.content().readCharSequence(req.content().readableBytes(), StandardCharsets.UTF_8).toString();
-        req.content().release();
-        return parameter;
-    }
 
 }
