@@ -61,6 +61,10 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         String uri = request.uri();
         PostRequestInfo info = UrlMappingResolver.handlerMappingUrl(uri);
 
+        if (info == null) {
+            info = UrlMappingResolver.handlerRequestParam(uri, request);
+        }
+
         if (info != null) {
             logger.info("请求参数: {} ", info.getArgumentString());
 

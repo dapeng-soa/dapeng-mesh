@@ -1,6 +1,8 @@
 package com.github.dapeng.gateway.netty.match;
 
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
+import com.github.dapeng.gateway.netty.request.RequestParser;
+import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,9 @@ public class UrlMappingResolver {
 
     private static final Pattern POST_GATEWAY_PATTERN = Pattern.compile("/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)(?:/([^\\s|^/]*))?");
 
+
+    private static final Pattern POST_GATEWAY_PATTERN_1 = Pattern.compile("/([^\\s|^/]*)(?:/([^\\s|^/]*))?");
+
     private static final String[] WILDCARD_CHARS = {"/", "?", "&", "="};
 
     public static PostRequestInfo handlerMappingUrl(String url) {
@@ -46,6 +51,27 @@ public class UrlMappingResolver {
                 methodName = holder.getLastPath();
             }
             return new PostRequestInfo(prefix, serviceName, versionName, methodName, apiKey, arguments);
+        }
+        return null;
+    }
+
+    public static PostRequestInfo handlerRequestParam(String url, FullHttpRequest request) {
+        Matcher matcher = POST_GATEWAY_PATTERN_1.matcher(url);
+        if (matcher.matches()) {
+            String prefix = matcher.group(1);
+            String apiKey = matcher.group(2);
+
+            List<UrlArgumentHolder.KV> arguments;
+            if (apiKey != null) {
+                UrlArgumentHolder holder = resolveArgument(apiKey);
+                arguments = holder.getArguments();
+                apiKey = holder.getLastPath();
+            } else {
+                UrlArgumentHolder holder = resolveArgument(prefix);
+                arguments = holder.getArguments();
+                prefix = holder.getLastPath();
+            }
+            return RequestParser.fastParse(prefix, apiKey, request, arguments);
         }
         return null;
     }
