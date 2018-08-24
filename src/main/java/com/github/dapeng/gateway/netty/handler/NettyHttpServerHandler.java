@@ -27,13 +27,6 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
 
-//    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
-
-//    private final String DEFAULT_MATCH_AUTH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{apiKey:[\\s\\S]*}";
-
-//    private final Pattern pathPattern = Pattern.compile("([\\s\\S]*)\\?([\\s\\S]*)");
-
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         try {
