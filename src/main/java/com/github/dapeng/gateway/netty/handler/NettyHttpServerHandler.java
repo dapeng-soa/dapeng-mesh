@@ -2,8 +2,8 @@ package com.github.dapeng.gateway.netty.handler;
 
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.gateway.config.ContainerStatus;
-import com.github.dapeng.gateway.netty.match.AntPathMatcher;
-import com.github.dapeng.gateway.netty.match.PathMatcher;
+import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
+import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.PostUtil;
 import io.netty.buffer.Unpooled;
@@ -15,9 +15,7 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 
 /**
  * desc: NettyHttpServerHandler
@@ -29,12 +27,11 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
 
-    private PathMatcher pathMatcher = new AntPathMatcher();
-    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
+//    private final String DEFAULT_MATCH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}";
 
-    private final String DEFAULT_MATCH_AUTH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{apiKey:[\\s\\S]*}";
+//    private final String DEFAULT_MATCH_AUTH = "/api/{serviceName:[\\s\\S]*}/{version:[\\s\\S]*}/{methodName:[\\s\\S]*}/{apiKey:[\\s\\S]*}";
 
-    private final Pattern pathPattern = Pattern.compile("([\\s\\S]*)\\?([\\s\\S]*)");
+//    private final Pattern pathPattern = Pattern.compile("([\\s\\S]*)\\?([\\s\\S]*)");
 
 
     @Override
@@ -70,15 +67,13 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
 
-        if (pathMatcher.match(DEFAULT_MATCH_AUTH, uri)) {
-            Map<String, String> pathVariableMap = pathMatcher.extractUriTemplateVariables(DEFAULT_MATCH_AUTH, request.uri());
-            String serviceName = pathVariableMap.get("serviceName");
-            String version = pathVariableMap.get("version");
-            String methodName = pathVariableMap.get("methodName");
+        PostRequestInfo info = UrlMappingResolver.handlerMappingUrl(uri);
+        logger.info("请求参数: {} ", info.getArgumentString());
+
+        if (info != null) {
             String parameter = RequestParser.fastParseParam(request, "parameter");
 
-            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(serviceName, version, methodName, parameter, request);
-
+            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request);
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {
                     String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
