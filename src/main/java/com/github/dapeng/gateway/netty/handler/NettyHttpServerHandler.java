@@ -59,11 +59,11 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
-
         PostRequestInfo info = UrlMappingResolver.handlerMappingUrl(uri);
-        logger.info("请求参数: {} ", info.getArgumentString());
 
         if (info != null) {
+            logger.info("请求参数: {} ", info.getArgumentString());
+
             String parameter = RequestParser.fastParseParam(request, "parameter");
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request);

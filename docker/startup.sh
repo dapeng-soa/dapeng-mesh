@@ -43,7 +43,7 @@ process_exit() {
 
 trap 'kill ${!};process_exit' SIGTERM
 
-nohup java -server $JVM_OPTS $SOA_BASE $DEBUG_OPTS $USER_OPTS  $E_JAVA_OPTS -jar $PRGDIR/dapeng-mesh-2.0.4.jar >> $LOGDIR/console.log 2>&1 &
+nohup java -server $JVM_OPTS $SOA_BASE $DEBUG_OPTS $USER_OPTS  $E_JAVA_OPTS -jar $PRGDIR/dapeng-mesh-2.0.4-jar-with-dependencies.jar >> $LOGDIR/console.log 2>&1 &
 
 pid="$!"
 
