@@ -118,7 +118,7 @@ public class PostUtil {
     }*/
 
     private static int getEnvTimeOut() {
-        return SoaSystemEnvProperties.SOA_SERVICE_TIMEOUT.intValue();
+        return (int) SoaSystemEnvProperties.SOA_SERVICE_TIMEOUT;
     }
 }
 
