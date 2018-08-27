@@ -3,6 +3,7 @@ package com.github.dapeng.gateway.netty;
 import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
 import com.github.dapeng.gateway.netty.handler.NettyLinkStateHandler;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -72,7 +73,10 @@ public class NettyHttpServer {
 
                     })
                     .option(ChannelOption.SO_BACKLOG, 1024)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    .childOption(ChannelOption.SO_KEEPALIVE, Boolean.TRUE)
+                    .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+
 
             ChannelFuture future = bootstrap.bind(port).sync();
 
