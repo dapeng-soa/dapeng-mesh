@@ -5,8 +5,8 @@ import com.github.dapeng.gateway.config.ContainerStatus;
 import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
+import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.util.PostUtil;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -34,8 +34,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
-            sendHttpResponse(ctx, "处理请求失败!", null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-            logger.error("处理请求失败!" + e.getMessage(), e);
+            logger.error("channelRead0 处理请求失败, " + e.getMessage(), e);
+            sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,7 +56,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             handlerPostRequest(request, ctx);
             return;
         }
-        sendHttpResponse(ctx, "不符合的请求", request, HttpResponseStatus.OK);
+        sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.IllegalRequest), request, HttpResponseStatus.OK);
     }
 
     private void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
@@ -87,7 +87,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
                 }
             });
         } else {
-            sendHttpResponse(ctx, "不合法的请求", request, HttpResponseStatus.OK);
+            sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.IllegalRequest), request, HttpResponseStatus.OK);
         }
     }
 
@@ -98,8 +98,19 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             sendHttpResponse(ctx, "GateWay is running", request, HttpResponseStatus.OK);
         } else {
             logger.debug("not support url request, uri: {}", uri);
-            sendHttpResponse(ctx, "不支持的请求类型", request, HttpResponseStatus.OK);
+            sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.RequestTypeNotSupport), request, HttpResponseStatus.OK);
         }
+    }
+
+
+    /**
+     * wrap message response for json format.
+     *
+     * @param code
+     * @return
+     */
+    private String wrapErrorResponse(DapengMeshCode code) {
+        return String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", code.getCode(), code.getMsg(), "{}");
     }
 
     /**
@@ -139,8 +150,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error(cause.getMessage(), cause);
-        sendHttpResponse(ctx, "服务器错误: " + cause.getMessage(), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        logger.error("exceptionCaught未知异常: " + cause.getMessage(), cause);
+        sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.GateWayUnknownError), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         ctx.close();
     }
 }
