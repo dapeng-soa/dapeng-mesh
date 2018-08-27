@@ -2,6 +2,7 @@ package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
 import com.github.dapeng.gateway.netty.handler.NettyLinkStateHandler;
+import com.github.dapeng.gateway.util.Constants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -11,6 +12,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +49,13 @@ public class NettyHttpServer {
      * todo 一些handler是否可以shareable？
      */
     public void start() {
-        bossGroup = new NioEventLoopGroup(1);
-        workerGroup = new NioEventLoopGroup();
+        // eventGroup
+        bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("netty-server-boss-group", Boolean.TRUE));
+        workerGroup = new NioEventLoopGroup(Constants.DEFAULT_IO_THREADS, new DefaultThreadFactory("netty-server-worker-group", Boolean.TRUE));
+
+        // sharable handler
         NettyLinkStateHandler linkStateHandler = new NettyLinkStateHandler();
         NettyHttpServerHandler httpServerHandler = new NettyHttpServerHandler();
-
-
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap
@@ -102,7 +105,7 @@ public class NettyHttpServer {
                         workerGroup.shutdownGracefully();
                     }
                 }
-            });
+            }, "netty-server-shutdownHook-thread");
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
         }
     }
