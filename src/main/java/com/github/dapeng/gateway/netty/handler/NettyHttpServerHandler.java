@@ -6,6 +6,7 @@ import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.PostUtil;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -110,6 +111,8 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * @param status  http status
      */
     private void sendHttpResponse(ChannelHandlerContext ctx, String content, FullHttpRequest request, HttpResponseStatus status) {
+//        ByteBuf byteBuf = ctx.alloc().buffer(context.length());
+//        byteBuf.writeBytes(context.getBytes(CharsetUtil.UTF_8));
 
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
