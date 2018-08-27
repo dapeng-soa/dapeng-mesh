@@ -49,6 +49,8 @@ public class NettyHttpServer {
         bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup();
         NettyLinkStateHandler linkStateHandler = new NettyLinkStateHandler();
+        NettyHttpServerHandler httpServerHandler = new NettyHttpServerHandler();
+
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -65,7 +67,7 @@ public class NettyHttpServer {
                             ph.addLast("decoder", new HttpRequestDecoder());
                             ph.addLast("aggregator", new HttpObjectAggregator(10 * 1024 * 1024));
                             // 服务端业务逻辑
-                            ph.addLast("handler", new NettyHttpServerHandler());
+                            ph.addLast("handler", httpServerHandler);
                         }
 
                     })

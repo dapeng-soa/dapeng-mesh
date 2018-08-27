@@ -8,6 +8,7 @@ import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.PostUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
@@ -23,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
  * @author hz.lei
  * @since 2018年08月23日 上午10:01
  */
+@ChannelHandler.Sharable
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
 
