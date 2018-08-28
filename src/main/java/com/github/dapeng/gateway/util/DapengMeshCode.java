@@ -9,17 +9,15 @@ import com.github.dapeng.core.SoaBaseCodeInterface;
  * @since 2018年08月27日 下午11:20
  */
 public enum DapengMeshCode implements SoaBaseCodeInterface {
-
+    /**
+     * IllegalRequest
+     */
     IllegalRequest("Err-Mesh-501", "请求url不合法"),
     ProcessReqFailed("Err-Mesh-502", "网关错误,处理请求异常"),
     RequestUrlNotSupport("Err-Mesh-503", "网关不支持该请求Url"),
-
-    RequestTypeNotSupport("Err-Mesh-503", "网关不支持该请求类型"),
-    MeshUnknownError("Err-Mesh-504", "网关服务器出现未知错误"),
-
-    MeshShutdownSoon("Err-Mesh-504","dapeng-mesh网关即将关闭");
-
-
+    RequestTypeNotSupport("Err-Mesh-504", "网关不支持该请求类型"),
+    MeshUnknownError("Err-Mesh-505", "网关服务器出现未知错误"),
+    MeshShutdownSoon("Err-Mesh-506", "health check is yellow,container will shutdown soon");
 
 
     private String code;

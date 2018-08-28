@@ -1,5 +1,7 @@
 package com.github.dapeng.gateway.netty;
 
+import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
+import com.github.dapeng.gateway.http.MeshHealthStatus;
 import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
 import com.github.dapeng.gateway.util.Constants;
 import io.netty.bootstrap.ServerBootstrap;
@@ -14,6 +16,8 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * desc: NettyHttpServer
@@ -95,6 +99,14 @@ public class NettyHttpServer {
             // No shutdown hook registered yet.
             this.shutdownHook = new Thread(() -> {
                 synchronized (startupShutdownMonitor) {
+                    HttpGetHeadProcessor.status = MeshHealthStatus.YELLOW;
+                    logger.info("sleep 15s, wait nginx health check remove this gateway");
+                    try {
+                        TimeUnit.SECONDS.sleep(15);
+                    } catch (InterruptedException e) {
+                        logger.error("睡眠线程被打断: " + e.getMessage(), e);
+                    }
+                    logger.info("ready to shutdown dapeng mesh!");
                     if (bossGroup != null) {
                         bossGroup.shutdownGracefully();
                     }

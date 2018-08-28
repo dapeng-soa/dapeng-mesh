@@ -39,7 +39,7 @@ public class HttpGetHeadProcessor {
             logger.info("handlerHealth check,container status: " + status);
             return new HttpResponseEntity(HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.MeshShutdownSoon), HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
-        return new HttpResponseEntity(HttpProcessorUtils.wrapResponse(url, "container is running"), HttpResponseStatus.OK);
+        return new HttpResponseEntity(HttpProcessorUtils.wrapResponse(url, "health check container is running"), HttpResponseStatus.OK);
     }
 
 

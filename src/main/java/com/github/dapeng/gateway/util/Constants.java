@@ -11,7 +11,7 @@ public class Constants {
     public static final int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() * 2, 32);
 
 
-    public static final String GET_HEALTH_CHECK_URL = "/handlerHealth/check";
+    public static final String GET_HEALTH_CHECK_URL = "/health/check";
 
 
     public static final String GET_CHECK = "/";
