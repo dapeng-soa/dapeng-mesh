@@ -1,7 +1,6 @@
 package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
-import com.github.dapeng.gateway.netty.handler.NettyLinkStateHandler;
 import com.github.dapeng.gateway.util.Constants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -54,7 +53,6 @@ public class NettyHttpServer {
         workerGroup = new NioEventLoopGroup(Constants.DEFAULT_IO_THREADS, new DefaultThreadFactory("netty-server-worker-group", Boolean.TRUE));
 
         // sharable handler
-        NettyLinkStateHandler linkStateHandler = new NettyLinkStateHandler();
         NettyHttpServerHandler httpServerHandler = new NettyHttpServerHandler();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -65,7 +63,6 @@ public class NettyHttpServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline ph = ch.pipeline();
-                            ph.addLast("linkStateHandler", linkStateHandler);
                             //处理http服务的关键handler
                             ph.addLast("encoder", new HttpResponseEncoder());
                             ph.addLast("decoder", new HttpRequestDecoder());

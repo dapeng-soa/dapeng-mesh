@@ -5,9 +5,10 @@ import com.github.dapeng.gateway.config.ContainerStatus;
 import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
+import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.util.PostUtil;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -35,6 +36,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
             doService(httpRequest, ctx);
         } catch (Exception e) {
             logger.error("channelRead0 处理请求失败, " + e.getMessage(), e);
+            //todo 返回码是 200 还是 500 ？
             sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -93,7 +95,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     private void handlerGetAndHead(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
-        if ("/health/check".equals(uri)) {
+        if (Constants.GET_HEALTH_CHECK_URL.equals(uri)) {
             logger.debug("health check,container status: " + ContainerStatus.GREEN);
             sendHttpResponse(ctx, "GateWay is running", request, HttpResponseStatus.OK);
         } else {
@@ -120,12 +122,13 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * @param content msg's info
      * @param request msg's request
      * @param status  http status
+     * @link 不使用 Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
      */
     private void sendHttpResponse(ChannelHandlerContext ctx, String content, FullHttpRequest request, HttpResponseStatus status) {
-//        ByteBuf byteBuf = ctx.alloc().buffer(context.length());
-//        byteBuf.writeBytes(context.getBytes(CharsetUtil.UTF_8));
+        ByteBuf wrapBuf = ctx.alloc().buffer(content.length());
+        wrapBuf.writeBytes(content.getBytes(CharsetUtil.UTF_8));
 
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, wrapBuf);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
         if (request == null) {

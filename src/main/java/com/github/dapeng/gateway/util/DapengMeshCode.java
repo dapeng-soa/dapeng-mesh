@@ -10,10 +10,8 @@ import com.github.dapeng.core.SoaBaseCodeInterface;
  */
 public enum DapengMeshCode implements SoaBaseCodeInterface {
 
-    // 客户端
     IllegalRequest("Err-Mesh-501", "请求url不合法"),
-
-    ProcessReqFailed("Err-Mesh-502", "dapengMesh处理请求失败"),
+    ProcessReqFailed("Err-Mesh-502", "网关错误,处理请求异常"),
     RequestTypeNotSupport("Err-Mesh-503", "网关不支持该请求类型"),
     GateWayUnknownError("Err-Mesh-504", "网关服务器出现未知错误");
 

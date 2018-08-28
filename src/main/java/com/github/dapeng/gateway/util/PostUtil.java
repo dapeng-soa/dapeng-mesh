@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.util;
 
+import com.github.dapeng.client.netty.JsonPost;
 import com.github.dapeng.core.InvocationContext;
 import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
@@ -9,7 +10,6 @@ import com.github.dapeng.core.helper.DapengUtil;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.json.OptimizedMetadata;
 import com.github.dapeng.openapi.cache.ServiceCache;
-import com.github.dapeng.openapi.utils.AsyncJsonPost;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ public class PostUtil {
     }
 
 
-
     private static Future<String> postAsync(String service,
                                             String version,
                                             String method,
@@ -49,17 +48,14 @@ public class PostUtil {
         }
 //        fillInvocationCtx(invocationCtx, req);
 
-        AsyncJsonPost jsonPost = new AsyncJsonPost(service, version, method, true);
+        JsonPost jsonPost = new JsonPost(service, version, method, true);
 
         try {
-            return jsonPost.callServiceMethodAsync(parameter, bizService);
+             return jsonPost.callServiceMethodAsync(parameter, bizService);
         } catch (SoaException e) {
-
             LOGGER.error(e.getMsg(), e);
             return CompletableFuture.completedFuture(String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", e.getCode(), e.getMsg(), "{}"));
-
         } catch (Exception e) {
-
             LOGGER.error(e.getMessage(), e);
             return CompletableFuture.completedFuture(String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", "9999", "系统繁忙，请稍后再试[9999]！", "{}"));
         } finally {
