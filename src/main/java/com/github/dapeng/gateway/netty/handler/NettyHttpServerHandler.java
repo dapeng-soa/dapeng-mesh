@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * desc: NettyHttpServerHandler
- *
- * @author hz.lei
- * @since 2018年08月23日 上午10:01
+ * @author hz.lei 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
@@ -35,8 +32,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
         try {
             doService(httpRequest, ctx);
         } catch (Exception e) {
-            logger.error("channelRead0 处理请求失败, " + e.getMessage(), e);
-            //todo 返回码是 200 还是 500 ？
+            logger.error("网关处理请求失败: " + e.getMessage(), e);
             sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -112,7 +108,9 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * @return
      */
     private String wrapErrorResponse(DapengMeshCode code) {
-        return String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", code.getCode(), code.getMsg(), "{}");
+        String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", code.getCode(), code.getMsg(), "{}");
+        logger.info("mesh-response: {}", resp);
+        return resp;
     }
 
     /**
@@ -123,6 +121,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * @param request msg's request
      * @param status  http status
      * @link 不使用 Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
+     * @link Unpooled.wrappedBuffer
      */
     private void sendHttpResponse(ChannelHandlerContext ctx, String content, FullHttpRequest request, HttpResponseStatus status) {
         ByteBuf wrapBuf = ctx.alloc().buffer(content.length());
@@ -130,13 +129,14 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, wrapBuf);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
 
         if (request == null) {
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         } else {
             boolean isKeepAlive = HttpUtil.isKeepAlive(request);
             if (isKeepAlive) {
-                response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+//                response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
                 response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                 ctx.writeAndFlush(response);
             } else {
@@ -147,13 +147,15 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("连接的客户端地址:{}", ctx.channel().remoteAddress());
+        if (logger.isDebugEnabled()) {
+            logger.debug("连接的客户端地址:{}", ctx.channel().remoteAddress());
+        }
         super.channelActive(ctx);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("exceptionCaught未知异常: " + cause.getMessage(), cause);
+        logger.error("网关handler exceptionCaught未知异常: " + cause.getMessage(), cause);
         sendHttpResponse(ctx, wrapErrorResponse(DapengMeshCode.GateWayUnknownError), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         ctx.close();
     }
