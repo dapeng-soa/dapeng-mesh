@@ -49,7 +49,7 @@ public class NettyHttpServer {
     }
 
     /**
-     * todo 一些handler是否可以shareable？
+     * start
      */
     public void start() {
         // eventGroup
@@ -104,9 +104,8 @@ public class NettyHttpServer {
                     try {
                         TimeUnit.SECONDS.sleep(15);
                     } catch (InterruptedException e) {
-                        logger.error("睡眠线程被打断: " + e.getMessage(), e);
                     }
-                    logger.info("ready to shutdown dapeng mesh!");
+                    logger.info("ready to shutdown this gateway!");
                     if (bossGroup != null) {
                         bossGroup.shutdownGracefully();
                     }

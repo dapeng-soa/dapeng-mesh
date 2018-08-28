@@ -31,7 +31,11 @@ public class HttpPostProcessor {
         }
 
         if (info != null) {
+            //鉴权
+//            checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2);
+
             logger.info("请求参数: {} ", info.getArgumentString());
+
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request);
@@ -52,4 +56,21 @@ public class HttpPostProcessor {
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IllegalRequest), request, HttpResponseStatus.OK);
         }
     }
+
+    /*private void checkSecret(String serviceName, String apiKey, String secret, String timestamp, String parameter, String secret2) throws SoaException {
+        Set<String> list = WhiteListUtil.getServiceWhiteList();
+        if (null == list || !list.contains(serviceName)) {
+            throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
+        }
+        HttpServletRequest request = InvokeUtil.getHttpRequest();
+        String ip = request == null ? IPUtils.localIp() : InvokeUtil.getIpAddress(request);
+        CheckGateWayAuthRequest checkGateWayAuthRequest = new CheckGateWayAuthRequest();
+        checkGateWayAuthRequest.setApiKey(apiKey);
+        checkGateWayAuthRequest.setSecret(Optional.ofNullable(secret));
+        checkGateWayAuthRequest.setTimestamp(timestamp);
+        checkGateWayAuthRequest.setInvokeIp(ip);
+        checkGateWayAuthRequest.setParameter(Optional.ofNullable(parameter));
+        checkGateWayAuthRequest.setSecret2(Optional.ofNullable(secret2));
+        adminService.checkGateWayAuth(checkGateWayAuthRequest);
+    }*/
 }

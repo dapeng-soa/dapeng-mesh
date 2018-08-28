@@ -56,7 +56,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
      * handler get 和 head 请求
      */
     private void handlerGetAndHead(FullHttpRequest request, ChannelHandlerContext ctx) {
-        HttpResponseEntity entity = getHandler.handlerRequest(request, ctx);
+        HttpResponseEntity entity = getHandler.handlerRequest(request);
         HttpProcessorUtils.sendHttpResponse(ctx, entity, request);
     }
 

@@ -2,7 +2,6 @@ package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public class HttpGetHeadProcessor {
      */
     public static MeshHealthStatus status = MeshHealthStatus.GREEN;
 
-    public HttpResponseEntity handlerRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
+    public HttpResponseEntity handlerRequest(FullHttpRequest request) {
         String url = request.uri();
 
         if (Constants.GET_HEALTH_CHECK_URL.equals(url)) {
