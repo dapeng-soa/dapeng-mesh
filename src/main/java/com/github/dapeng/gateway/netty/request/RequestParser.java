@@ -44,15 +44,17 @@ public final class RequestParser {
         return params;
     }
 
-
-    public static PostRequestInfo fastParse(String prefix, String apiKey, FullHttpRequest httpRequest, List<UrlArgumentHolder.KV> arguments) {
+    /**
+     * parse http params
+     */
+    public static PostRequestInfo fastParse(String prefix, String apiKey, FullHttpRequest httpRequest, Map<String, String> arguments) {
         String content = httpRequest.content().toString(StandardCharsets.UTF_8);
         QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
         Map<String, List<String>> parameters = qs.parameters();
 
         List<String> defaultStr = new ArrayList<>();
-        defaultStr.add("defualt");
 
+        defaultStr.add("");
         String serviceName = parameters.getOrDefault("serviceName", defaultStr).get(0);
         String version = parameters.getOrDefault("version", defaultStr).get(0);
         String methodName = parameters.getOrDefault("methodName", defaultStr).get(0);
@@ -60,10 +62,11 @@ public final class RequestParser {
         String parameter = parameters.getOrDefault("parameter", defaultStr).get(0);
 
         String timestamp = parameters.getOrDefault("timestamp", defaultStr).get(0);
+
         String secret = parameters.getOrDefault("secret", defaultStr).get(0);
+        String secret2 = parameters.getOrDefault("secret2", defaultStr).get(0);
 
-
-        return new PostRequestInfo(prefix, serviceName, version, methodName, apiKey, arguments);
+        return new PostRequestInfo(prefix, serviceName, version, methodName, apiKey, timestamp, secret, secret2, parameter, arguments);
     }
 
 

@@ -1,18 +1,25 @@
 package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.SoaCode;
+import com.github.dapeng.core.SoaException;
+import com.github.dapeng.gateway.auth.WhiteListUtil;
 import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
+import com.github.dapeng.gateway.util.InvokeUtil;
 import com.github.dapeng.gateway.util.PostUtil;
+import com.today.api.admin.OpenAdminServiceClient;
+import com.today.api.admin.request.CheckGateWayAuthRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -21,6 +28,8 @@ import java.util.concurrent.CompletableFuture;
 public class HttpPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpPostProcessor.class);
+
+    private final OpenAdminServiceClient adminService = new OpenAdminServiceClient();
 
     public void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
@@ -31,9 +40,11 @@ public class HttpPostProcessor {
         }
 
         if (info != null) {
-            //鉴权
-//            checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2);
-
+            try {
+                authSecret(info, request, ctx);
+            } catch (SoaException e) {
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), request, HttpResponseStatus.OK);
+            }
             logger.info("请求参数: {} ", info.getArgumentString());
 
 
@@ -57,13 +68,33 @@ public class HttpPostProcessor {
         }
     }
 
-    /*private void checkSecret(String serviceName, String apiKey, String secret, String timestamp, String parameter, String secret2) throws SoaException {
+    /**
+     * 鉴权 ..
+     *
+     * @param info post参数
+     */
+    private void authSecret(PostRequestInfo info, FullHttpRequest request, ChannelHandlerContext ctx) throws SoaException {
+        String serviceName = info.getService();
+        String apiKey = info.getApiKey();
+        String secret = info.getSecret();
+        String timestamp = info.getTimestamp();
+        String parameter = info.getParameter();
+        String secret2 = info.getSecret2();
+        String remoteIp = InvokeUtil.getIpAddress(request, ctx);
+
+        try {
+            checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2, remoteIp);
+        } catch (SoaException e) {
+            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, info.getVersion(), info.getMethod(), InvokeUtil.getCookies(info), e);
+            throw e;
+        }
+    }
+
+    private void checkSecret(String serviceName, String apiKey, String secret, String timestamp, String parameter, String secret2, String ip) throws SoaException {
         Set<String> list = WhiteListUtil.getServiceWhiteList();
         if (null == list || !list.contains(serviceName)) {
             throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
         }
-        HttpServletRequest request = InvokeUtil.getHttpRequest();
-        String ip = request == null ? IPUtils.localIp() : InvokeUtil.getIpAddress(request);
         CheckGateWayAuthRequest checkGateWayAuthRequest = new CheckGateWayAuthRequest();
         checkGateWayAuthRequest.setApiKey(apiKey);
         checkGateWayAuthRequest.setSecret(Optional.ofNullable(secret));
@@ -71,6 +102,7 @@ public class HttpPostProcessor {
         checkGateWayAuthRequest.setInvokeIp(ip);
         checkGateWayAuthRequest.setParameter(Optional.ofNullable(parameter));
         checkGateWayAuthRequest.setSecret2(Optional.ofNullable(secret2));
+
         adminService.checkGateWayAuth(checkGateWayAuthRequest);
-    }*/
+    }
 }

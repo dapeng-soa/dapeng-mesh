@@ -40,41 +40,50 @@ public class UrlMappingResolver {
             String methodName = matcher.group(4);
             String apiKey = matcher.group(5);
 
-            List<UrlArgumentHolder.KV> arguments;
+            Map<String, String> argumentMap;
+
             if (apiKey != null) {
                 UrlArgumentHolder holder = resolveArgument(apiKey);
-                arguments = holder.getArguments();
+                argumentMap = holder.getArgumentMap();
                 apiKey = holder.getLastPath();
             } else {
                 UrlArgumentHolder holder = resolveArgument(methodName);
-                arguments = holder.getArguments();
+                argumentMap = holder.getArgumentMap();
                 methodName = holder.getLastPath();
             }
-            return new PostRequestInfo(prefix, serviceName, versionName, methodName, apiKey, arguments);
+            return new PostRequestInfo(prefix, serviceName, versionName, methodName, apiKey, argumentMap);
         }
         return null;
     }
 
+    /**
+     * 得到 param参数
+     *
+     * @param url
+     * @param request
+     * @return
+     */
     public static PostRequestInfo handlerRequestParam(String url, FullHttpRequest request) {
         Matcher matcher = POST_GATEWAY_PATTERN_1.matcher(url);
         if (matcher.matches()) {
             String prefix = matcher.group(1);
             String apiKey = matcher.group(2);
 
-            List<UrlArgumentHolder.KV> arguments;
+            Map<String, String> arguments;
             if (apiKey != null) {
                 UrlArgumentHolder holder = resolveArgument(apiKey);
-                arguments = holder.getArguments();
+                arguments = holder.getArgumentMap();
                 apiKey = holder.getLastPath();
             } else {
                 UrlArgumentHolder holder = resolveArgument(prefix);
-                arguments = holder.getArguments();
+                arguments = holder.getArgumentMap();
                 prefix = holder.getLastPath();
             }
             return RequestParser.fastParse(prefix, apiKey, request, arguments);
         }
         return null;
     }
+
 
 
     private static UrlArgumentHolder resolveArgument(String parameter) {
@@ -90,7 +99,7 @@ public class UrlMappingResolver {
                 UrlArgumentHolder holder = UrlArgumentHolder.nonPropertyCreator();
                 Arrays.stream(arguments.split(WILDCARD_CHARS[2])).forEach(argument -> {
                     String[] arg = argument.split(WILDCARD_CHARS[3]);
-                    holder.setArgument(new UrlArgumentHolder.KV(arg[0], arg[1]));
+                    holder.setArgument(arg[0], arg[1]);
                 });
                 holder.setLastPath(parameter.substring(0, pos));
                 return holder;

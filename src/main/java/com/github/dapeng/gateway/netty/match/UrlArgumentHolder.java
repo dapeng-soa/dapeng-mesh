@@ -1,7 +1,7 @@
 package com.github.dapeng.gateway.netty.match;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -13,20 +13,11 @@ import java.util.stream.Collectors;
 public class UrlArgumentHolder {
     private String lastPath;
 
-    private List<KV> arguments = new ArrayList<>();
+    private Map<String, String> argumentMap = new HashMap<>();
 
-    public static class KV {
-        public String argKey;
-        public String argValue;
 
-        public KV(String argKey, String argValue) {
-            this.argKey = argKey;
-            this.argValue = argValue;
-        }
-    }
-
-    public void setArgument(KV kv) {
-        this.arguments.add(kv);
+    public void setArgument(String key, String value) {
+        this.argumentMap.put(key, value);
     }
 
     public void setLastPath(String lastPath) {
@@ -37,8 +28,8 @@ public class UrlArgumentHolder {
         return lastPath;
     }
 
-    public List<KV> getArguments() {
-        return arguments;
+    public Map<String, String> getArgumentMap() {
+        return argumentMap;
     }
 
     public static UrlArgumentHolder onlyPathCreator(String path) {
@@ -56,7 +47,7 @@ public class UrlArgumentHolder {
     public String toString() {
         return "UrlArgumentHolder{" +
                 "lastPath='" + lastPath + '\'' +
-                ", arguments=" + arguments.stream().map(argument -> "KV:[" + argument.argKey + " -> " + argument.argValue + "]").collect(Collectors.joining(",")) +
+                ", arguments=" + argumentMap.entrySet().stream().map(argument -> "KV:[" + argument.getKey() + " -> " + argument.getValue() + "]").collect(Collectors.joining(",")) +
                 '}';
     }
 }

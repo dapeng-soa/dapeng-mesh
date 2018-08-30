@@ -1,9 +1,8 @@
 package com.github.dapeng.gateway.netty.request;
 
-import com.github.dapeng.gateway.netty.match.UrlArgumentHolder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -18,15 +17,38 @@ public class PostRequestInfo {
     private String version;
     private String method;
     private String apiKey;
-    private List<UrlArgumentHolder.KV> arguments = new ArrayList<>();
 
-    public PostRequestInfo(String prefix, String service, String version, String method, String apiKey, List<UrlArgumentHolder.KV> arguments) {
+    private String timestamp;
+    private String secret;
+    private String secret2;
+
+    private String parameter;
+
+
+    private Map<String, String> arguments = new HashMap<>();
+
+    public PostRequestInfo(String prefix, String service, String version, String method, String apiKey, Map<String, String> arguments) {
         this.prefix = prefix;
         this.service = service;
         this.version = version;
         this.method = method;
         this.apiKey = apiKey;
-        this.arguments.addAll(arguments);
+        this.arguments.putAll(arguments);
+    }
+
+    public PostRequestInfo(String prefix, String service, String version, String method,
+                           String apiKey, String timestamp, String secret, String secret2,
+                           String parameter, Map<String, String> arguments) {
+        this.prefix = prefix;
+        this.service = service;
+        this.version = version;
+        this.method = method;
+        this.apiKey = apiKey;
+        this.timestamp = timestamp;
+        this.secret = secret;
+        this.secret2 = secret2;
+        this.parameter = parameter;
+        this.arguments = arguments;
     }
 
     public String getPrefix() {
@@ -49,13 +71,29 @@ public class PostRequestInfo {
         return apiKey;
     }
 
-    public List<UrlArgumentHolder.KV> getArguments() {
+    public Map<String, String> getArguments() {
         return arguments;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public String getSecret2() {
+        return secret2;
+    }
+
+    public String getParameter() {
+        return parameter;
+    }
+
     public String getArgumentString() {
-        return arguments.stream()
-                .map(argument -> "KV:[" + argument.argKey + " -> " + argument.argValue + "]")
+        return arguments.entrySet().stream()
+                .map(argument -> "KV:[" + argument.getKey() + " -> " + argument.getValue() + "]")
                 .collect(Collectors.joining(","));
     }
 }

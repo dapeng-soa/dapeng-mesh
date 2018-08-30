@@ -18,6 +18,8 @@
         <org.slf4j-version>1.7.25</org.slf4j-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.version>2.12.4</scala.version>
+        <admin-api.version>0.3.3-SNAPSHOT</admin-api.version>
+        <dapeng.version>2.0.5</dapeng.version>
     </properties>
 
 
@@ -87,8 +89,19 @@
         <dependency>
             <groupId>com.github.dapeng</groupId>
             <artifactId>dapeng-open-api</artifactId>
-            <!--<version>${dapeng.version}</version>-->
-            <version>2.1.0</version>
+            <version>${dapeng.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.today</groupId>
+            <artifactId>admin-api_2.12</artifactId>
+            <version>${admin-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>simple-xml</artifactId>
+            <version>2.7.1</version>
         </dependency>
 
     </dependencies>

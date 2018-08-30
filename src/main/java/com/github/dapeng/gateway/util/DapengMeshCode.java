@@ -17,7 +17,8 @@ public enum DapengMeshCode implements SoaBaseCodeInterface {
     RequestUrlNotSupport("Err-Mesh-503", "网关不支持该请求Url"),
     RequestTypeNotSupport("Err-Mesh-504", "网关不支持该请求类型"),
     MeshUnknownError("Err-Mesh-505", "网关服务器出现未知错误"),
-    MeshShutdownSoon("Err-Mesh-506", "health check is yellow,container will shutdown soon");
+    MeshShutdownSoon("Err-Mesh-506", "health check is yellow,container will shutdown soon"),
+    AuthSecretError("Err-Mesh-507", "网关鉴权失败,可能原因是不正确的apiKey或加密格式");
 
 
     private String code;
