@@ -7,13 +7,17 @@ import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.core.enums.CodecProtocol;
 import com.github.dapeng.core.helper.DapengUtil;
+import com.github.dapeng.core.helper.IPUtils;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
+import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.json.OptimizedMetadata;
 import com.github.dapeng.openapi.cache.ServiceCache;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -27,8 +31,8 @@ public class PostUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
 
 
-    public static Future<String> postAsync(String service, String version, String method, String parameter, FullHttpRequest req) {
-        return postAsync(service, version, method, parameter, req, true);
+    public static Future<String> postAsync(String service, String version, String method, String parameter, FullHttpRequest req, Map<String, String> cookies) {
+        return postAsync(service, version, method, parameter, req, cookies, true);
     }
 
 
@@ -37,8 +41,9 @@ public class PostUtil {
                                             String method,
                                             String parameter,
                                             FullHttpRequest req,
+                                            Map<String, String> cookies,
                                             boolean clearInvocationContext) {
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req);
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
 
         OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
 
@@ -46,12 +51,12 @@ public class PostUtil {
             LOGGER.error("bizService not found[service:" + service + ", version:" + version + "]");
             return CompletableFuture.completedFuture(String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.NoMatchedService.getCode(), SoaCode.NoMatchedService.getMsg(), "{}"));
         }
-//        fillInvocationCtx(invocationCtx, req);
+        fillInvocationCtx(invocationCtx, req);
 
         JsonPost jsonPost = new JsonPost(service, version, method, true);
 
         try {
-             return jsonPost.callServiceMethodAsync(parameter, bizService);
+            return jsonPost.callServiceMethodAsync(parameter, bizService);
         } catch (SoaException e) {
             LOGGER.error(e.getMsg(), e);
             return CompletableFuture.completedFuture(String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", e.getCode(), e.getMsg(), "{}"));
@@ -65,7 +70,7 @@ public class PostUtil {
         }
     }
 
-    private static InvocationContext createInvocationCtx(String service, String version, String method, FullHttpRequest req) {
+    private static InvocationContext createInvocationCtx(String service, String version, String method, FullHttpRequest req, Map<String, String> cookies) {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.serviceName(service);
         invocationCtx.versionName(version);
@@ -82,36 +87,39 @@ public class PostUtil {
             }
         }
 
+        if (!cookies.isEmpty()) {
+            invocationCtx.cookies(cookies);
+        }
+
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
         return invocationCtx;
     }
 
-    /*private static void fillInvocationCtx(InvocationContext invocationCtx, FullHttpRequest req) {
-
-        Set<String> parameters = req.getParameterMap().keySet();
-        if (parameters.contains("calleeIp")) {
-            invocationCtx.calleeIp(IPUtils.transferIp(req.getParameter("calleeIp")));
+    private static void fillInvocationCtx(InvocationContext invocationCtx, FullHttpRequest req) {
+        Map<String, List<String>> parameters = RequestParser.fastParseToMap(req);
+        if (parameters.containsKey("calleeIp")) {
+            invocationCtx.calleeIp(IPUtils.transferIp(parameters.get("calleeIp").get(0)));
         }
 
-        if (parameters.contains("calleePort")) {
-            invocationCtx.calleePort(Integer.valueOf(req.getParameter("calleePort")));
+        if (parameters.containsKey("calleePort")) {
+            invocationCtx.calleePort(Integer.valueOf(parameters.get("calleePort").get(0)));
         }
 
-        if (parameters.contains("callerMid")) {
-            invocationCtx.callerMid(req.getParameter("callerMid"));
+        if (parameters.containsKey("callerMid")) {
+            invocationCtx.callerMid(parameters.get("callerMid").get(0));
         }
 
-        if (parameters.contains("userId")) {
-            invocationCtx.userId(Long.valueOf(req.getParameter("userId")));
+        if (parameters.containsKey("userId")) {
+            invocationCtx.userId(Long.valueOf(parameters.get("userId").get(0)));
         }
 
-        if (parameters.contains("operatorId")) {
-            invocationCtx.operatorId(Long.valueOf(req.getParameter("operatorId")));
+        if (parameters.containsKey("operatorId")) {
+            invocationCtx.operatorId(Long.valueOf(parameters.get("operatorId").get(0)));
         }
 
         InvocationContext.InvocationContextProxy invocationCtxProxy = InvocationContextImpl.Factory.getInvocationContextProxy();
         invocationCtx.cookies(invocationCtxProxy.cookies());
-    }*/
+    }
 
     private static int getEnvTimeOut() {
         return (int) SoaSystemEnvProperties.SOA_SERVICE_TIMEOUT;

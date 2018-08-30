@@ -2,7 +2,7 @@ package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
-import com.github.dapeng.gateway.auth.WhiteListUtil;
+import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
@@ -49,7 +49,7 @@ public class HttpPostProcessor {
 
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
-            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request);
+            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request,InvokeUtil.getCookies(info));
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {
                     String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
@@ -91,7 +91,7 @@ public class HttpPostProcessor {
     }
 
     private void checkSecret(String serviceName, String apiKey, String secret, String timestamp, String parameter, String secret2, String ip) throws SoaException {
-        Set<String> list = WhiteListUtil.getServiceWhiteList();
+        Set<String> list = WhiteListHandler.getServiceWhiteList();
         if (null == list || !list.contains(serviceName)) {
             throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
         }

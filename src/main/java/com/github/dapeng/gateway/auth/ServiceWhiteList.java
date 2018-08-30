@@ -11,7 +11,7 @@ import java.util.Set;
  * email :yq1724555319@gmail.com
  */
 @Root(name = "service-whitelist")
-public class ServiceWhitelist {
+public class ServiceWhiteList {
     @ElementList(entry = "service", inline = true)
     private Set<String> service;
 

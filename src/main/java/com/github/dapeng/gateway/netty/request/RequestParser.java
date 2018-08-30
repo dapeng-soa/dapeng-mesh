@@ -87,4 +87,14 @@ public final class RequestParser {
     }
 
 
+    /**
+     * parse http params
+     */
+    public static Map<String, List<String>> fastParseToMap(FullHttpRequest httpRequest) {
+        String content = httpRequest.content().toString(StandardCharsets.UTF_8);
+        QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
+        return qs.parameters();
+    }
+
+
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service-whitelist>
+    <service>com.today.api.order.service.OrderService2</service>
+    <service>com.today.api.dictionary.service.OpenDictionaryService</service>
+    <service>com.today.soa.idgen.service.IDService</service>
+    <service>com.today.api.stock.service.StockService</service>
+    <service>com.today.api.inventory.service.AdminInventoryService</service>
+    <service>com.today.api.admin.service.AdminService</service>
+    <service>com.today.api.admin.service.OpenAdminService</service>
+    <service>com.today.api.admin.service.AminScheduledService</service>
+    <service>com.today.api.category.service.OpenCategoryService</service>
+    <service>com.today.api.layout.service.OpenLayoutService</service>
+    <service>com.today.api.skuprice.service.OpenSkuPriceService</service>
+    <service>com.today.api.purchase.service.PurchaseService</service>
+    <service>com.today.api.address.service.OpenAddressService</service>
+    <service>com.today.api.dailyorder.service.DailyOrderService</service>
+    <service>com.today.api.goods.service.OpenGoodsService</service>
+    <service>com.today.api.skuBuyingPrice.service.OpenSkuBuyingPriceService</service>
+    <service>com.today.api.supplier.service.OpenSupplierService</service>
+    <service>com.today.api.order.service.OrderQueryService</service>
+    <service>com.today.api.member.service.MemberService</service>
+    <service>com.today.api.purchase.query.service.PurchaseQueryService</service>
+    <service>com.today.api.category.service.AdminCategoryService</service>
+    <service>com.today.api.purchase.service.PurchaseSupplierService</service>
+    <service>com.today.api.verifyorder.service.OrderVerifyService</service>
+</service-whitelist>

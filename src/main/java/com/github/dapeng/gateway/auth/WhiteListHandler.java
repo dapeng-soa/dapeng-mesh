@@ -17,8 +17,8 @@ import java.util.Set;
  * email :yq1724555319@gmail.com
  */
 
-public class WhiteListUtil {
-    private static Logger LOGGER = LoggerFactory.getLogger(WhiteListUtil.class);
+public class WhiteListHandler {
+    private static Logger LOGGER = LoggerFactory.getLogger(WhiteListHandler.class);
     private static Persister persister = null;
 
     public static Set<String> getServiceWhiteList() {
@@ -39,7 +39,7 @@ public class WhiteListUtil {
             //==images==//
             inputStream = new FileInputStream("/gateway-conf/service-whitelist.xml");
             Set<String> services = persister.read(
-                    ServiceWhitelist.class, inputStream)
+                    ServiceWhiteList.class, inputStream)
                     .getService();
             LOGGER.info("load service-whitelist.xml on [/gateway-conf] current whitelist [{}]", services.size());
             return services;
@@ -48,7 +48,7 @@ public class WhiteListUtil {
             try {
                 //==develop==//
                 Set<String> services = persister.read(
-                        ServiceWhitelist.class,
+                        ServiceWhiteList.class,
                         ResourceUtils.getFile("classpath:service-whitelist.xml"))
                         .getService();
                 LOGGER.info("load service-whitelist.xml on [classpath] current whitelist [{}]", services.size());
