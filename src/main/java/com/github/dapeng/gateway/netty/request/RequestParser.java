@@ -67,6 +67,8 @@ public final class RequestParser {
     }
 
 
+
+
     /**
      * 解析 http 请求携带参数
      *
@@ -78,9 +80,12 @@ public final class RequestParser {
         String content = httpRequest.content().toString(StandardCharsets.UTF_8);
         QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
         Map<String, List<String>> parameters = qs.parameters();
-        String value = parameters.get(condition).get(0);
+        List<String> result = parameters.get(condition);
 
-        return value;
+        if (result != null) {
+            return result.get(0);
+        }
+        return null;
     }
 
 

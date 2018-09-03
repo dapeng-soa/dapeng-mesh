@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.http;
 
+import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
@@ -57,6 +58,11 @@ public class HttpProcessorUtils {
         return wrapErrorResponse(null, code);
     }
 
+
+    public static String wrapExCodeResponse(SoaException ex) {
+        return wrapExCodeResponse(null, ex);
+    }
+
     /**
      * wrap message response for json format.
      *
@@ -65,6 +71,18 @@ public class HttpProcessorUtils {
      */
     public static String wrapErrorResponse(String url, DapengMeshCode code) {
         String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", code.getCode(), code.getMsg(), "{}");
+        logger.info("mesh-response: url: {}, info: {}", url, resp);
+        return resp;
+    }
+
+    /**
+     * wrap message response for json format.
+     *
+     * @param ex
+     * @return
+     */
+    public static String wrapExCodeResponse(String url, SoaException ex) {
+        String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", ex.getCode(), ex.getMsg(), "{}");
         logger.info("mesh-response: url: {}, info: {}", url, resp);
         return resp;
     }

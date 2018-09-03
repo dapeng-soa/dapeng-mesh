@@ -33,12 +33,13 @@ public class HttpPostProcessor {
 
     public void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
-        PostRequestInfo info = null;
+        PostRequestInfo info;
         try {
-            info = UrlMappingResolver.handlerMappingUrl(uri);
+            info = UrlMappingResolver.handlerMappingUrl(uri, request);
         } catch (SoaException e) {
             logger.error(e.getCode(), e.getMsg());
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.OpenAuthEnableError), request, HttpResponseStatus.OK);
+            return;
         }
 
         if (info == null) {
@@ -47,6 +48,7 @@ public class HttpPostProcessor {
             } catch (SoaException e) {
                 logger.error(e.getCode(), e.getMsg());
                 HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.OpenAuthEnableError), request, HttpResponseStatus.OK);
+                return;
             }
         }
 
@@ -55,12 +57,17 @@ public class HttpPostProcessor {
             try {
                 authSecret(info, request, ctx);
             } catch (SoaException e) {
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(e), request, HttpResponseStatus.OK);
+                return;
+            } catch (Exception e) {
                 HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), request, HttpResponseStatus.OK);
+                return;
             }
             logger.info("请求参数: {} ", info.getArgumentString());
 
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
+
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {

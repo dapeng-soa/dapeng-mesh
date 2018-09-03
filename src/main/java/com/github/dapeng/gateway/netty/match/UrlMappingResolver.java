@@ -32,7 +32,7 @@ public class UrlMappingResolver {
      * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId/{apiKey}?cookie=234&user=maple
      * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId
      */
-    public static PostRequestInfo handlerMappingUrl(String url) throws SoaException {
+    public static PostRequestInfo handlerMappingUrl(String url, FullHttpRequest request) throws SoaException {
         Matcher matcher = POST_GATEWAY_PATTERN.matcher(url);
         if (matcher.matches()) {
             String prefix = matcher.group(1);
@@ -42,10 +42,17 @@ public class UrlMappingResolver {
             String apiKey = matcher.group(5);
 
             if (apiKey == null) {
-                return handlerRestNoAuthArgument(prefix, serviceName, versionName, methodName);
+                return handlerRestNoAuthArgument(prefix, serviceName, versionName, methodName, request);
             }
             UrlArgumentHolder holder = doResolveArgument(apiKey);
-            return new PostRequestInfo(prefix, serviceName, versionName, methodName, holder.getLastPath(), holder.getArgumentMap());
+
+            String timestamp = RequestParser.fastParseParam(request, "timestamp");
+            String secret = RequestParser.fastParseParam(request, "secret");
+            String secret2 = RequestParser.fastParseParam(request, "secret2");
+            String parameter = RequestParser.fastParseParam(request, "parameter");
+
+
+            return new PostRequestInfo(prefix, serviceName, versionName, methodName, holder.getLastPath(), timestamp, secret, secret2, parameter, holder.getArgumentMap());
         }
         return null;
     }
@@ -55,12 +62,14 @@ public class UrlMappingResolver {
      * 处理 rest 风格url 不带 apiKey (无鉴权模式)
      * 根据系统变量 {@link SysEnvUtil#KEY_OPEN_AUTH_ENABLE} 判断是否支持此模式请求.
      */
-    private static PostRequestInfo handlerRestNoAuthArgument(String prefix, String serviceName, String versionName, String methodName) throws SoaException {
+    private static PostRequestInfo handlerRestNoAuthArgument(String prefix, String serviceName, String versionName, String methodName, FullHttpRequest request) throws SoaException {
         boolean authEnable = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE);
         if (authEnable) {
             throw new SoaException(DapengMeshCode.OpenAuthEnableError);
         }
         UrlArgumentHolder holder = doResolveArgument(methodName);
+
+
         return new PostRequestInfo(prefix, serviceName, versionName, holder.getLastPath(), null, holder.getArgumentMap());
     }
 
