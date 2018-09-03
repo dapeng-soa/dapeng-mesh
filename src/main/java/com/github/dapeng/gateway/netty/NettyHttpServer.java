@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * desc: NettyHttpServer
- *
- * @author hz.lei
+ * @author maple NettyHttpServer
  * @since 2018年08月23日 上午9:54
  */
 public class NettyHttpServer {
@@ -112,6 +110,7 @@ public class NettyHttpServer {
                     if (workerGroup != null) {
                         workerGroup.shutdownGracefully();
                     }
+                    logger.info("end to shutdown this gateway!");
                 }
             }, "netty-server-shutdownHook-thread");
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);

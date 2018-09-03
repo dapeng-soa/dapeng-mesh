@@ -12,11 +12,8 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * @author with struy.
- * Create by 2018/5/12 00:07
- * email :yq1724555319@gmail.com
+ * @author maple 2018.09.03 17:02
  */
-
 public class WhiteListHandler {
     private static Logger LOGGER = LoggerFactory.getLogger(WhiteListHandler.class);
     private static Persister persister = null;

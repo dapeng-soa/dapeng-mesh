@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * desc: UrlArgumentHolder
- *
- * @author hz.lei
- * @since 2018年08月24日 下午2:49
+ * @author maple 2018.08.24 14:49 UrlArgumentHolder
  */
 public class UrlArgumentHolder {
     private String lastPath;

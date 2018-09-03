@@ -6,9 +6,7 @@ import org.simpleframework.xml.Root;
 import java.util.Set;
 
 /**
- * @author with struy.
- * Create by 2018/5/12 00:00
- * email :yq1724555319@gmail.com
+ * @author maple 2018.09.03 17:02
  */
 @Root(name = "service-whitelist")
 public class ServiceWhiteList {

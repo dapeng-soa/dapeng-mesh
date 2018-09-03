@@ -13,7 +13,6 @@ import java.util.Map;
  * Create by 2018/5/9 15:10
  * email :yq1724555319@gmail.com
  */
-
 public class InvokeUtil {
     /**
      * 获取用户真实IP地址，不使用request.getRemoteAddr();的原因是有可能用户使用了代理软件方式避免真实IP地址,

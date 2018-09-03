@@ -1,6 +1,5 @@
 package com.github.dapeng.gateway.netty.request;
 
-import com.github.dapeng.gateway.netty.match.UrlArgumentHolder;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
@@ -15,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * desc: 解析 httpRequest请求参数.
- *
- * @author hz.lei
+ * @author maple httpRequest请求参数
  * @since 2018年08月23日 上午10:01
  */
 public final class RequestParser {

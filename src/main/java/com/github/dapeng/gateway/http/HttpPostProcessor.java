@@ -33,11 +33,23 @@ public class HttpPostProcessor {
 
     public void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
-        PostRequestInfo info = UrlMappingResolver.handlerMappingUrl(uri);
+        PostRequestInfo info = null;
+        try {
+            info = UrlMappingResolver.handlerMappingUrl(uri);
+        } catch (SoaException e) {
+            logger.error(e.getCode(), e.getMsg());
+            HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.OpenAuthEnableError), request, HttpResponseStatus.OK);
+        }
 
         if (info == null) {
-            info = UrlMappingResolver.handlerRequestParam(uri, request);
+            try {
+                info = UrlMappingResolver.handlerRequestParam(uri, request);
+            } catch (SoaException e) {
+                logger.error(e.getCode(), e.getMsg());
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.OpenAuthEnableError), request, HttpResponseStatus.OK);
+            }
         }
+
 
         if (info != null) {
             try {
@@ -49,7 +61,7 @@ public class HttpPostProcessor {
 
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
-            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request,InvokeUtil.getCookies(info));
+            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {
                     String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");

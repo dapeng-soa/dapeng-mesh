@@ -1,7 +1,10 @@
 package com.github.dapeng.gateway.netty.match;
 
+import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
+import com.github.dapeng.gateway.util.DapengMeshCode;
+import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * desc: UrlMappingResolver
- *
- * @author hz.lei
- * @since 2018年08月24日 下午1:23
+ * @author maple 2018.09.03 17:02  UrlMappingResolver
  */
 public class UrlMappingResolver {
     private static Logger logger = LoggerFactory.getLogger(UrlMappingResolver.class);
-
-    /**
-     * Default path separator: "/"
-     */
-    public static final String DEFAULT_PATH_SEPARATOR = "/";
 
     private static final Pattern POST_GATEWAY_PATTERN = Pattern.compile("/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)(?:/([^\\s|^/]*))?");
 
@@ -31,7 +26,13 @@ public class UrlMappingResolver {
 
     private static final String[] WILDCARD_CHARS = {"/", "?", "&", "="};
 
-    public static PostRequestInfo handlerMappingUrl(String url) {
+
+    /**
+     * 解析 rest风格的请求,包括apiKey 和 没有 apiKey 的 请求
+     * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId/{apiKey}?cookie=234&user=maple
+     * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId
+     */
+    public static PostRequestInfo handlerMappingUrl(String url) throws SoaException {
         Matcher matcher = POST_GATEWAY_PATTERN.matcher(url);
         if (matcher.matches()) {
             String prefix = matcher.group(1);
@@ -40,53 +41,71 @@ public class UrlMappingResolver {
             String methodName = matcher.group(4);
             String apiKey = matcher.group(5);
 
-            Map<String, String> argumentMap;
-
-            if (apiKey != null) {
-                UrlArgumentHolder holder = resolveArgument(apiKey);
-                argumentMap = holder.getArgumentMap();
-                apiKey = holder.getLastPath();
-            } else {
-                UrlArgumentHolder holder = resolveArgument(methodName);
-                argumentMap = holder.getArgumentMap();
-                methodName = holder.getLastPath();
+            if (apiKey == null) {
+                return handlerRestNoAuthArgument(prefix, serviceName, versionName, methodName);
             }
-            return new PostRequestInfo(prefix, serviceName, versionName, methodName, apiKey, argumentMap);
+            UrlArgumentHolder holder = doResolveArgument(apiKey);
+            return new PostRequestInfo(prefix, serviceName, versionName, methodName, holder.getLastPath(), holder.getArgumentMap());
         }
         return null;
     }
 
+
     /**
-     * 得到 param参数
-     *
-     * @param url
-     * @param request
-     * @return
+     * 处理 rest 风格url 不带 apiKey (无鉴权模式)
+     * 根据系统变量 {@link SysEnvUtil#KEY_OPEN_AUTH_ENABLE} 判断是否支持此模式请求.
      */
-    public static PostRequestInfo handlerRequestParam(String url, FullHttpRequest request) {
+    private static PostRequestInfo handlerRestNoAuthArgument(String prefix, String serviceName, String versionName, String methodName) throws SoaException {
+        boolean authEnable = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE);
+        if (authEnable) {
+            throw new SoaException(DapengMeshCode.OpenAuthEnableError);
+        }
+        UrlArgumentHolder holder = doResolveArgument(methodName);
+        return new PostRequestInfo(prefix, serviceName, versionName, holder.getLastPath(), null, holder.getArgumentMap());
+    }
+
+
+    /**
+     * 解析 requestParam 风格的请求,包括apiKey 和 没有 apiKey 的 请求
+     * etc. /api/{apiKey}?cookie=234&user=maple
+     * etc. /api?cookie=234&user=maple
+     */
+    public static PostRequestInfo handlerRequestParam(String url, FullHttpRequest request) throws SoaException {
         Matcher matcher = POST_GATEWAY_PATTERN_1.matcher(url);
         if (matcher.matches()) {
             String prefix = matcher.group(1);
             String apiKey = matcher.group(2);
 
-            Map<String, String> arguments;
-            if (apiKey != null) {
-                UrlArgumentHolder holder = resolveArgument(apiKey);
-                arguments = holder.getArgumentMap();
-                apiKey = holder.getLastPath();
-            } else {
-                UrlArgumentHolder holder = resolveArgument(prefix);
-                arguments = holder.getArgumentMap();
-                prefix = holder.getLastPath();
+            if (apiKey == null) {
+                return handlerParamNoAuthArgument(prefix, request);
             }
+
+            UrlArgumentHolder holder = doResolveArgument(apiKey);
+            Map<String, String> arguments = holder.getArgumentMap();
+            apiKey = holder.getLastPath();
             return RequestParser.fastParse(prefix, apiKey, request, arguments);
         }
         return null;
     }
 
+    /**
+     * 处理 requestParam 风格url 不带 apiKey (无鉴权模式)
+     * 根据系统变量 {@link SysEnvUtil#KEY_OPEN_AUTH_ENABLE} 判断是否支持此模式请求.
+     */
+    private static PostRequestInfo handlerParamNoAuthArgument(String prefix, FullHttpRequest request) throws SoaException {
+        boolean authEnable = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE);
+        if (authEnable) {
+            throw new SoaException(DapengMeshCode.OpenAuthEnableError);
+        }
+        UrlArgumentHolder holder = doResolveArgument(prefix);
+        return RequestParser.fastParse(holder.getLastPath(), null, request, holder.getArgumentMap());
+    }
 
 
-    private static UrlArgumentHolder resolveArgument(String parameter) {
+    /**
+     * 解析url后携带参数,封装为 Map
+     */
+    private static UrlArgumentHolder doResolveArgument(String parameter) {
         try {
             // container ?
             int pos = parameter.lastIndexOf(WILDCARD_CHARS[1]);

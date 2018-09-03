@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * desc: PostRequestInfo
- *
- * @author hz.lei
- * @since 2018年08月24日 下午3:27
+ * @author maple 2018.08.24 15:27 PostRequestInfo
  */
 public class PostRequestInfo {
     private String prefix;

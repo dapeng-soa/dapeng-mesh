@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author hz.lei 2018.08.23 上午10:01
+ * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {

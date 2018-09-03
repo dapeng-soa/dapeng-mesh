@@ -5,11 +5,9 @@ import com.github.dapeng.openapi.cache.ZkBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * desc: zk metadata fetch init
- *
- * @author hz.lei
- * @since 2018年06月21日 上午10:40
+ * @author maple 2018.06.21 10:40 zk metadata fetch init
  */
 public class ApiGateWayConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiGateWayConfig.class);
