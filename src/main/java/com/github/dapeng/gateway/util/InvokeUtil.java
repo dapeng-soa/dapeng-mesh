@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class InvokeUtil {
             ip = headers.get("HTTP_X_FORWARDED_FOR");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = ctx.channel().remoteAddress().toString();
+            ip = ((InetSocketAddress) ctx.channel().remoteAddress()).getHostString();
         }
         return !ip.contains(",") ? ip : ip.split(",")[0];
     }

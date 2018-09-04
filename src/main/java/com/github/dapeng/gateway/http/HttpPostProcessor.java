@@ -1,15 +1,13 @@
 package com.github.dapeng.gateway.http;
 
+import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
-import com.github.dapeng.gateway.util.Constants;
-import com.github.dapeng.gateway.util.DapengMeshCode;
-import com.github.dapeng.gateway.util.InvokeUtil;
-import com.github.dapeng.gateway.util.PostUtil;
+import com.github.dapeng.gateway.util.*;
 import com.today.api.admin.OpenAdminServiceClient;
 import com.today.api.admin.request.CheckGateWayAuthRequest;
 import io.netty.channel.ChannelHandlerContext;
@@ -63,8 +61,11 @@ public class HttpPostProcessor {
                 HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), request, HttpResponseStatus.OK);
                 return;
             }
-            logger.info("请求参数: {} ", info.getArgumentString());
-
+            if (logger.isDebugEnabled()) {
+                logger.debug("请求参数: {} ", info.getArgumentString());
+            }
+            // fill invocationContext
+            fillInvocationProxy(request, info, ctx);
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
 
@@ -85,6 +86,14 @@ public class HttpPostProcessor {
         } else {
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IllegalRequest), request, HttpResponseStatus.OK);
         }
+    }
+
+    /**
+     * fillInvocationProxy
+     */
+    private void fillInvocationProxy(FullHttpRequest request, PostRequestInfo info, ChannelHandlerContext ctx) {
+        SoaInvocationProxy invocationProxy = new SoaInvocationProxy(request, info, ctx);
+        InvocationContextImpl.Factory.setInvocationContextProxy(invocationProxy);
     }
 
     /**

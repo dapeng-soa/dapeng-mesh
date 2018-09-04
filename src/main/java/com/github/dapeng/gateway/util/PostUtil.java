@@ -92,6 +92,7 @@ public class PostUtil {
         }
 
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
+        invocationCtx.timeout(10000);
         return invocationCtx;
     }
 
