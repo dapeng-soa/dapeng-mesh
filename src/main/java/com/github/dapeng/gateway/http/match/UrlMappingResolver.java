@@ -159,7 +159,7 @@ public class UrlMappingResolver {
 
         try {
             if (matcher.matches()) {
-                String prefix = matcher.group(1) + matcher.group(2);
+                String prefix = "/" + matcher.group(1) + "/" + matcher.group(2);
 
                 if (!prefix.equals(Constants.ECHO_PREFIX)) {
                     return null;

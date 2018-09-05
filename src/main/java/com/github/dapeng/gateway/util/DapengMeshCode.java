@@ -20,7 +20,7 @@ public enum DapengMeshCode implements SoaBaseCodeInterface {
     MeshShutdownSoon("Err-Mesh-506", "health check is yellow,container will shutdown soon"),
     AuthSecretError("Err-Mesh-507", "网关鉴权失败,可能原因是不正确的apiKey或加密格式"),
     OpenAuthEnableError("Err-Mesh-508", "网关接口需要鉴权,未开放无需鉴权功能"),
-    EchoUnknowEx("Err-Mesh-509", "Echo接口检查请求服务异常");
+    EchoUnknowEx("Err-Mesh-509", "Echo接口请求url格式不正确");
 
 
     private String code;

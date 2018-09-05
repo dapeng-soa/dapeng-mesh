@@ -95,4 +95,12 @@ public class HttpProcessorUtils {
         logger.debug("mesh-response: url: {}, info: {}", url, resp);
         return resp;
     }
+
+    /**
+     * wrap message response for json format.
+     */
+    public static String logResponse(String url, Object msg) {
+        logger.debug("mesh-log-response: url: {}, info: {}", url, msg);
+        return msg.toString();
+    }
 }

@@ -35,6 +35,9 @@ public class HttpGetHeadProcessor {
 
                 return controller.syncSysTime(url);
             default:
+                if (url.contains(Constants.ECHO_PREFIX)) {
+                    return controller.echo(url);
+                }
                 break;
         }
         logger.debug("not support url request, uri: {}", url);

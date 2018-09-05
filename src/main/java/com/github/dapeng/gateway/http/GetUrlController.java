@@ -61,7 +61,7 @@ public class GetUrlController {
         if (pair != null) {
             try {
                 String echoResp = new EchoClient(pair.getKey(), pair.getValue()).echo();
-                return new HttpResponseEntity(HttpProcessorUtils.wrapResponse(url, echoResp), HttpResponseStatus.OK);
+                return new HttpResponseEntity(HttpProcessorUtils.logResponse(url, echoResp), HttpResponseStatus.OK);
             } catch (SoaException ex) {
                 logger.error(ex.getMessage(), ex);
                 return new HttpResponseEntity(HttpProcessorUtils.wrapResponse(url, ex), HttpResponseStatus.OK);
@@ -89,7 +89,7 @@ public class GetUrlController {
      * @return 服务端系统当前时间
      */
     public HttpResponseEntity syncSysTime(String url) {
-        return new HttpResponseEntity(HttpProcessorUtils.wrapResponse(url, System.currentTimeMillis()), HttpResponseStatus.OK);
+        return new HttpResponseEntity(HttpProcessorUtils.logResponse(url, System.currentTimeMillis()), HttpResponseStatus.OK);
     }
 
 }

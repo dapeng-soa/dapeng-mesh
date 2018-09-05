@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.netty;
 
+import com.github.dapeng.gateway.http.GetUrlController;
 import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
 import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
@@ -97,7 +98,7 @@ public class NettyHttpServer {
             // No shutdown hook registered yet.
             this.shutdownHook = new Thread(() -> {
                 synchronized (startupShutdownMonitor) {
-                    HttpGetHeadProcessor.status = MeshHealthStatus.YELLOW;
+                    GetUrlController.status = MeshHealthStatus.YELLOW;
                     logger.info("sleep 15s, wait nginx health check remove this gateway");
                     try {
                         TimeUnit.SECONDS.sleep(15);
