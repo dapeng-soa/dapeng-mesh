@@ -110,6 +110,7 @@ public class HttpPostProcessor {
         String secret2 = info.getSecret2();
         String remoteIp = InvokeUtil.getIpAddress(request, ctx);
 
+        setCallInvocationTimeOut();
         try {
             checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2, remoteIp);
         } catch (SoaException e) {
@@ -132,5 +133,10 @@ public class HttpPostProcessor {
         checkGateWayAuthRequest.setSecret2(Optional.ofNullable(secret2));
 
         adminService.checkGateWayAuth(checkGateWayAuthRequest);
+    }
+
+    private void setCallInvocationTimeOut() {
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
+        invocationCtx.timeout(10000);
     }
 }
