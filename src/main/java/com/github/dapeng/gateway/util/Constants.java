@@ -17,5 +17,9 @@ public class Constants {
 
     public static final String RESP_STATUS = "status";
 
+    public static final String SERVICE_LIST = "/api/list";
+    public static final String SYS_TIME_SYNC = "/api/sysTime";
+    public static final String ECHO_PREFIX = "/echo";
+
 
 }

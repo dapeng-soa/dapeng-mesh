@@ -4,7 +4,7 @@ import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
-import com.github.dapeng.gateway.netty.match.UrlMappingResolver;
+import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.*;

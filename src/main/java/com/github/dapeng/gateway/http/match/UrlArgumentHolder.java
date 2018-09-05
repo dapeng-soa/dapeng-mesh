@@ -1,4 +1,4 @@
-package com.github.dapeng.gateway.netty.match;
+package com.github.dapeng.gateway.http.match;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +36,7 @@ public class UrlArgumentHolder {
     }
 
     public static UrlArgumentHolder nonPropertyCreator() {
-        UrlArgumentHolder holder = new UrlArgumentHolder();
-        return holder;
+        return new UrlArgumentHolder();
     }
 
     @Override

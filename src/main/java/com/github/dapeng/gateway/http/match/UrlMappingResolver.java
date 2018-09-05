@@ -1,13 +1,16 @@
-package com.github.dapeng.gateway.netty.match;
+package com.github.dapeng.gateway.http.match;
 
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
+import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.handler.codec.http.FullHttpRequest;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.Tuple2;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,10 +24,14 @@ public class UrlMappingResolver {
 
     private static final Pattern POST_GATEWAY_PATTERN = Pattern.compile("/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)(?:/([^\\s|^/]*))?");
 
-
     private static final Pattern POST_GATEWAY_PATTERN_1 = Pattern.compile("/([^\\s|^/]*)(?:/([^\\s|^/]*))?");
 
+    private static final Pattern ECHO_PATTERN = Pattern.compile("/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)/([^\\s|^/]*)");
+
+
     private static final String[] WILDCARD_CHARS = {"/", "?", "&", "="};
+
+    private static final String DEFAULT_URL_PREFIX = "api";
 
 
     /**
@@ -85,6 +92,11 @@ public class UrlMappingResolver {
             String prefix = matcher.group(1);
             String apiKey = matcher.group(2);
 
+            // prefix 必须以 api开头，否则为非法请求
+            if (!prefix.equals(DEFAULT_URL_PREFIX)) {
+                return null;
+            }
+
             if (apiKey == null) {
                 return handlerParamNoAuthArgument(prefix, request);
             }
@@ -138,4 +150,31 @@ public class UrlMappingResolver {
             return UrlArgumentHolder.onlyPathCreator(parameter);
         }
     }
+
+    /**
+     * 解析 rest风格的 echo get 请求  /api/echo/{service}/{version}
+     */
+    public static Pair<String, String> handlerEchoUrl(String url) {
+        Matcher matcher = ECHO_PATTERN.matcher(url);
+
+        try {
+            if (matcher.matches()) {
+                String prefix = matcher.group(1) + matcher.group(2);
+
+                if (!prefix.equals(Constants.ECHO_PREFIX)) {
+                    return null;
+                }
+                String serviceName = matcher.group(3);
+                String versionName = matcher.group(4);
+
+                return new Pair<>(serviceName, versionName);
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+
+        }
+    }
+
 }
