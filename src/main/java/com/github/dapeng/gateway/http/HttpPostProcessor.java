@@ -1,8 +1,10 @@
 package com.github.dapeng.gateway.http;
 
+import com.github.dapeng.core.InvocationContext;
 import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
+import com.github.dapeng.core.helper.DapengUtil;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
@@ -71,16 +73,21 @@ public class HttpPostProcessor {
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
             jsonResponse.whenComplete((result, ex) -> {
-                if (ex != null) {
-                    String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
-                    HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
-                } else {
-                    if (result.contains(Constants.RESP_STATUS)) {
-                        HttpProcessorUtils.sendHttpResponse(ctx, result, request, HttpResponseStatus.OK);
-                        return;
+                try {
+                    if (ex != null) {
+                        String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
+                        HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
+                    } else {
+                        InvocationContextImpl invocationContext = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
+                        if (!invocationContext.callSuccess()) {
+                            HttpProcessorUtils.sendHttpResponse(ctx, result, request, HttpResponseStatus.OK);
+                            return;
+                        }
+                        String response = "{}".equals(result) ? "{\"status\":1}" : result.substring(0, result.lastIndexOf('}')) + ",\"status\":1}";
+                        HttpProcessorUtils.sendHttpResponse(ctx, response, request, HttpResponseStatus.OK);
                     }
-                    String response = "{}".equals(result) ? "{\"status\":1}" : result.substring(0, result.lastIndexOf('}')) + ",\"status\":1}";
-                    HttpProcessorUtils.sendHttpResponse(ctx, response, request, HttpResponseStatus.OK);
+                } finally {
+                    InvocationContextImpl.Factory.removeCurrentInstance();
                 }
             });
         } else {
