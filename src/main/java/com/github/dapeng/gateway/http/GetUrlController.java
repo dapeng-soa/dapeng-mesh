@@ -2,12 +2,12 @@ package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.echo.EchoClient;
+import com.github.dapeng.gateway.http.match.Pair;
 import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.json.OptimizedMetadata;
 import com.github.dapeng.openapi.cache.ServiceCache;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

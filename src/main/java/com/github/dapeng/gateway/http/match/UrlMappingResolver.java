@@ -7,10 +7,8 @@ import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.handler.codec.http.FullHttpRequest;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Tuple2;
 
 import java.util.*;
 import java.util.regex.Matcher;

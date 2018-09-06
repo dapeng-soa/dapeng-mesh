@@ -34,14 +34,14 @@ public class WhiteListHandler {
         FileInputStream inputStream = null;
         try {
             //==images==//
-            inputStream = new FileInputStream("/gateway-conf/service-whitelist.xml");
+            inputStream = new FileInputStream("/dapeng-mesh/service-whitelist.xml");
             Set<String> services = persister.read(
                     ServiceWhiteList.class, inputStream)
                     .getService();
             LOGGER.info("load service-whitelist.xml on [/gateway-conf] current whitelist [{}]", services.size());
             return services;
         } catch (FileNotFoundException e) {
-            LOGGER.warn("read file system NotFound [/gateway-conf/service-whitelist.xml],found conf file [service-whitelist.xml] on classpath");
+            LOGGER.warn("read file system NotFound [/dapeng-mesh/service-whitelist.xml],found conf file [service-whitelist.xml] on classpath");
             try {
                 //==develop==//
                 Set<String> services = persister.read(

@@ -55,7 +55,7 @@ public class HttpPostProcessor {
             try {
                 authSecret(info, request, ctx);
             } catch (SoaException e) {
-                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(e), request, HttpResponseStatus.OK);
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(uri, e), request, HttpResponseStatus.OK);
                 return;
             } catch (Exception e) {
                 HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), request, HttpResponseStatus.OK);
@@ -107,14 +107,18 @@ public class HttpPostProcessor {
         String secret = info.getSecret();
         String timestamp = info.getTimestamp();
         String parameter = info.getParameter();
-        String secret2 = info.getSecret2();
+        String secret2 = "".equals(info.getSecret2()) ? null : info.getSecret2();
         String remoteIp = InvokeUtil.getIpAddress(request, ctx);
 
         setCallInvocationTimeOut();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("apiKey: {}, secret: {} , timestamp: {}, secret2: {} , parameter: {} ", apiKey, secret, timestamp, secret2, parameter);
+        }
         try {
             checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2, remoteIp);
         } catch (SoaException e) {
-            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, info.getVersion(), info.getMethod(), InvokeUtil.getCookies(info), e);
+            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, info.getVersion(), info.getMethod(), InvokeUtil.getCookies(info));
             throw e;
         }
     }
