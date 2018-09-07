@@ -126,7 +126,7 @@ public class HttpPostProcessor {
         String secret2 = "".equals(info.getSecret2()) ? null : info.getSecret2();
         String remoteIp = InvokeUtil.getIpAddress(request, ctx);
 
-        setCallInvocationTimeOut();
+//        setCallInvocationTimeOut();
 
         if (logger.isDebugEnabled()) {
             logger.debug("apiKey: {}, secret: {} , timestamp: {}, secret2: {} , parameter: {} ", apiKey, secret, timestamp, secret2, parameter);
@@ -155,8 +155,8 @@ public class HttpPostProcessor {
         adminService.checkGateWayAuth(checkGateWayAuthRequest);
     }
 
-    private void setCallInvocationTimeOut() {
+    /*private void setCallInvocationTimeOut() {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.timeout(10000);
-    }
+    }*/
 }
