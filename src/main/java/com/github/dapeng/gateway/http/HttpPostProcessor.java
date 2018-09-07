@@ -1,15 +1,15 @@
 package com.github.dapeng.gateway.http;
 
-import com.github.dapeng.core.InvocationContext;
 import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
-import com.github.dapeng.core.helper.DapengUtil;
+import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.*;
+import com.github.dapeng.util.DumpUtil;
 import com.today.api.admin.OpenAdminServiceClient;
 import com.today.api.admin.request.CheckGateWayAuthRequest;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,6 +31,12 @@ public class HttpPostProcessor {
 
     private final OpenAdminServiceClient adminService = new OpenAdminServiceClient();
 
+    /**
+     * {@link SoaSystemEnvProperties#SOA_NORMAL_RESP_CODE}
+     *
+     * @param request netty request
+     * @param ctx     netty ctx
+     */
     public void handlerPostRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         String uri = request.uri();
         PostRequestInfo info;
@@ -72,14 +78,17 @@ public class HttpPostProcessor {
             String parameter = RequestParser.fastParseParam(request, "parameter");
 
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
+            long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
+                logger.info("soa-response: " + DumpUtil.formatToString(result) + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                 try {
                     if (ex != null) {
                         String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
                         HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
                     } else {
                         InvocationContextImpl invocationContext = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
-                        if (!invocationContext.callSuccess()) {
+                        //判断返回结果是否为 0000
+                        if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(invocationContext.lastInvocationInfo().responseCode())) {
                             HttpProcessorUtils.sendHttpResponse(ctx, result, request, HttpResponseStatus.OK);
                             return;
                         }
