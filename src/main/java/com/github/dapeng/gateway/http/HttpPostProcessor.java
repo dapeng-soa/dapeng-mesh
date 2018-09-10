@@ -80,12 +80,13 @@ public class HttpPostProcessor {
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
             long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
-                logger.info("soa-response: " + DumpUtil.formatToString(result) + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                 try {
                     if (ex != null) {
                         String resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", SoaCode.ServerUnKnown.getCode(), ex.getMessage(), "{}");
+                        logger.info("soa-response: " + resp + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                         HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
                     } else {
+                        logger.info("soa-response: " + DumpUtil.formatToString(result) + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                         InvocationContextImpl invocationContext = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
                         //判断返回结果是否为 0000
                         if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(invocationContext.lastInvocationInfo().responseCode())) {
