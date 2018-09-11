@@ -1,7 +1,6 @@
 package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.InvocationContextImpl;
-import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
