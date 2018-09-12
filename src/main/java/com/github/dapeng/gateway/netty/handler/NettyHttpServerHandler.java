@@ -25,27 +25,23 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttp
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         try {
-            doService(httpRequest, ctx);
+            dispatchRequest(httpRequest, ctx);
         } catch (Exception e) {
             logger.error("网关处理请求失败: " + e.getMessage(), e);
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void doService(FullHttpRequest request, ChannelHandlerContext ctx) throws Exception {
-        dispatchRequest(request, ctx);
-    }
-
     private void dispatchRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
         HttpMethod method = request.method();
-        boolean isGet = HttpMethod.GET.equals(method);
-        if (isGet || HttpMethod.HEAD.equals(method)) {
-            handlerGetAndHead(request, ctx);
-            return;
-        }
         boolean isPost = HttpMethod.POST.equals(method);
         if (isPost) {
             postHandler.handlerPostRequest(request, ctx);
+            return;
+        }
+        boolean isGet = HttpMethod.GET.equals(method);
+        if (isGet || HttpMethod.HEAD.equals(method)) {
+            handlerGetAndHead(request, ctx);
             return;
         }
         HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.RequestTypeNotSupport), request, HttpResponseStatus.OK);
