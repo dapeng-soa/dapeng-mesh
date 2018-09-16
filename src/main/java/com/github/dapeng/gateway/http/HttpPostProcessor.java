@@ -76,34 +76,31 @@ public class HttpPostProcessor {
 
             String parameter = RequestParser.fastParseParam(request, "parameter");
 
-            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookies(info));
+            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(info.getService(), info.getVersion(), info.getMethod(), parameter, request, InvokeUtil.getCookiesFromParameter(info));
             long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
-                try {
-                    if (ex != null) {
-                        String resp;
-                        if (ex instanceof SoaException) {
-                            resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", ((SoaException) ex).getCode(), ((SoaException) ex).getMsg(), "{}");
-                            logger.info("soa-response: " + resp + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
-                        } else {
-                            resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", DapengMeshCode.MeshUnknowEx.getCode(), ex.getMessage(), "{}");
-                            logger.info("soa-response: " + resp + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
-                        }
-                        HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
-
+                if (ex != null) {
+                    String resp;
+                    if (ex instanceof SoaException) {
+                        resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", ((SoaException) ex).getCode(), ((SoaException) ex).getMsg(), "{}");
+                        logger.info("soa-response: " + resp + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                     } else {
-                        logger.info("soa-response: " + DumpUtil.formatToString(result) + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
-                        InvocationContextImpl invocationContext = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
-                        //判断返回结果是否为 0000
-                        if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(invocationContext.lastInvocationInfo().responseCode())) {
-                            HttpProcessorUtils.sendHttpResponse(ctx, result, request, HttpResponseStatus.OK);
-                            return;
-                        }
-                        String response = "{}".equals(result) ? "{\"status\":1}" : result.substring(0, result.lastIndexOf('}')) + ",\"status\":1}";
-                        HttpProcessorUtils.sendHttpResponse(ctx, response, request, HttpResponseStatus.OK);
+                        resp = String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", DapengMeshCode.MeshUnknowEx.getCode(), ex.getMessage(), "{}");
+                        logger.info("soa-response: " + resp + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
                     }
-                } finally {
-                    InvocationContextImpl.Factory.removeCurrentInstance();
+                    HttpProcessorUtils.sendHttpResponse(ctx, resp, request, HttpResponseStatus.OK);
+
+                } else {
+                    logger.info("soa-response: " + DumpUtil.formatToString(result) + " cost:" + (System.currentTimeMillis() - beginTime) + "ms");
+                    InvocationContextImpl invocationContext = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
+                    //判断返回结果是否为 0000
+                    if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(invocationContext.lastInvocationInfo()
+                            .responseCode())) {
+                        HttpProcessorUtils.sendHttpResponse(ctx, result, request, HttpResponseStatus.OK);
+                        return;
+                    }
+                    String response = "{}".equals(result) ? "{\"status\":1}" : result.substring(0, result.lastIndexOf('}')) + ",\"status\":1}";
+                    HttpProcessorUtils.sendHttpResponse(ctx, response, request, HttpResponseStatus.OK);
                 }
             });
         } else {
@@ -141,7 +138,7 @@ public class HttpPostProcessor {
         try {
             checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2, remoteIp);
         } catch (SoaException e) {
-            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, info.getVersion(), info.getMethod(), InvokeUtil.getCookies(info));
+            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, info.getVersion(), info.getMethod(), InvokeUtil.getCookiesFromParameter(info));
             throw e;
         }
     }

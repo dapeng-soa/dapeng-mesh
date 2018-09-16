@@ -62,6 +62,6 @@ public class SoaInvocationProxy implements InvocationContext.InvocationContextPr
 
     @Override
     public Map<String, String> cookies() {
-        return InvokeUtil.getCookies(info);
+        return InvokeUtil.getCookiesFromParameter(info);
     }
 }

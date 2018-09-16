@@ -51,7 +51,7 @@ public class InvokeUtil {
     }
 
 
-    public static Map<String, String> getCookies(PostRequestInfo info) {
+    public static Map<String, String> getCookiesFromParameter(PostRequestInfo info) {
         Map<String, String> cookies = new HashMap<>(16);
         if (info == null) {
             return cookies;
