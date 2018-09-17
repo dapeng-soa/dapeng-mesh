@@ -16,7 +16,8 @@ public class HttpGetHeadProcessor {
     private GetUrlController controller = new GetUrlController();
 
     public HttpResponseEntity handlerRequest(FullHttpRequest request) {
-        String url = request.uri();
+        String url = processUrl(request.uri());
+
 
         switch (url) {
             case Constants.GET_HEALTH_CHECK_URL:
@@ -44,4 +45,18 @@ public class HttpGetHeadProcessor {
         return new HttpResponseEntity(HttpProcessorUtils.wrapErrorResponse(url, DapengMeshCode.RequestUrlNotSupport), HttpResponseStatus.OK);
     }
 
+    /**
+     * 如果 Get Url 带有 "?" , 去问号之前的内容
+     *
+     * @param url input url
+     * @return
+     */
+    private String processUrl(String url) {
+        int i = url.lastIndexOf("?");
+        if (i > 0) {
+            String processUrl = url.substring(0, i);
+            return processUrl;
+        }
+        return url;
+    }
 }
