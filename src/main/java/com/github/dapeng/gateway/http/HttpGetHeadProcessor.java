@@ -54,8 +54,7 @@ public class HttpGetHeadProcessor {
     private String processUrl(String url) {
         int i = url.lastIndexOf("?");
         if (i > 0) {
-            String processUrl = url.substring(0, i);
-            return processUrl;
+            return url.substring(0, i);
         }
         return url;
     }
