@@ -24,6 +24,7 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
         FullHttpRequest request = (FullHttpRequest) msg;
 
         RequestContext context = new RequestContext();
+        context.request(request);
         try {
             HttpMethod httpMethod = request.method();
             String url = request.uri();
@@ -33,12 +34,11 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
             // POST FIRST
             if (HttpMethod.POST.equals(httpMethod)) {
                 UrlMappingResolver.handlerPostUrl(request, context);
-            }
-
-
-            boolean isGet = HttpMethod.GET.equals(httpMethod);
-            if (isGet || HttpMethod.HEAD.equals(httpMethod)) {
-                logger.info("For the time being, no message to log for Get-method");
+            } else {
+                boolean isGet = HttpMethod.GET.equals(httpMethod);
+                if (isGet || HttpMethod.HEAD.equals(httpMethod)) {
+                    logger.info("For the time being, no message to log for Get-method");
+                }
             }
             super.channelRead(ctx, context);
         } catch (Exception e) {

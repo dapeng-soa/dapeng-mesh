@@ -32,7 +32,7 @@ public class RequestContext {
     /**
      * 当前请求是否合法
      */
-    private boolean isLegal;
+    private boolean isLegal = true;
 
     /**
      * 当前请求可能抛的异常及原因
