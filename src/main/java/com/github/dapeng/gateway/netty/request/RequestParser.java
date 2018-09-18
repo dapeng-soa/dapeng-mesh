@@ -45,6 +45,7 @@ public final class RequestParser {
     /**
      * parse http params
      */
+    @Deprecated
     public static PostRequestInfo fastParse(String prefix, String apiKey, FullHttpRequest httpRequest, Map<String, String> arguments) {
         String content = httpRequest.content().toString(StandardCharsets.UTF_8);
         QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);

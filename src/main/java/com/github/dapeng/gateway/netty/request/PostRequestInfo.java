@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 /**
  * @author maple 2018.08.24 15:27 PostRequestInfo
  */
+@Deprecated
 public class PostRequestInfo {
     private String prefix;
     private String service;
