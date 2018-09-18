@@ -19,6 +19,7 @@ import java.util.Map;
  */
 public final class RequestParser {
 
+
     private RequestParser() {
     }
 
@@ -66,7 +67,40 @@ public final class RequestParser {
         return new PostRequestInfo(prefix, serviceName, version, methodName, apiKey, timestamp, secret, secret2, parameter, arguments);
     }
 
+    /**
+     * parse http params
+     */
+    public static void fastParse(FullHttpRequest httpRequest, RequestContext context) {
+        String content = httpRequest.content().toString(StandardCharsets.UTF_8);
+        QueryStringDecoder qs = new QueryStringDecoder(content, StandardCharsets.UTF_8, false);
+        Map<String, List<String>> parameters = qs.parameters();
 
+        List<String> defaultStr = new ArrayList<>();
+
+        defaultStr.add("");
+        String serviceName = parameters.getOrDefault("serviceName", defaultStr).get(0);
+        String version = parameters.getOrDefault("version", defaultStr).get(0);
+        String methodName = parameters.getOrDefault("methodName", defaultStr).get(0);
+
+        String parameter = parameters.getOrDefault("parameter", defaultStr).get(0);
+
+        String timestamp = parameters.getOrDefault("timestamp", defaultStr).get(0);
+
+        String secret = parameters.getOrDefault("secret", defaultStr).get(0);
+        String secret2 = parameters.getOrDefault("secret2", defaultStr).get(0);
+
+        context.service(serviceName);
+        context.version(version);
+        context.method(methodName);
+        context.parameter(parameter);
+
+        context.timestamp(timestamp);
+        context.secret(secret);
+        context.secret2(secret2);
+        context.parameter(parameter);
+
+
+    }
 
 
     /**
