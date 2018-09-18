@@ -2,8 +2,11 @@ package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.http.GetUrlController;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
+import com.github.dapeng.gateway.netty.handler.HttpAuthHandler;
+import com.github.dapeng.gateway.netty.handler.HttpRequestHandler;
 import com.github.dapeng.gateway.netty.handler.HttpServerProcessHandler;
 import com.github.dapeng.gateway.util.Constants;
+import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -55,7 +58,12 @@ public class NettyHttpServer {
         workerGroup = new NioEventLoopGroup(Constants.DEFAULT_IO_THREADS, new DefaultThreadFactory("netty-server-worker-group", Boolean.TRUE));
 
         // sharable handler
+        HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
         HttpServerProcessHandler httpServerHandler = new HttpServerProcessHandler();
+
+        HttpAuthHandler httpAuthHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new HttpAuthHandler() : null;
+
+
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap
@@ -70,7 +78,13 @@ public class NettyHttpServer {
                             ph.addLast("decoder", new HttpRequestDecoder());
                             ph.addLast("aggregator", new HttpObjectAggregator(10 * 1024 * 1024));
                             // 服务端业务逻辑
-                            ph.addLast("handler", httpServerHandler);
+                            ph.addLast("requestHandler", httpRequestHandler);
+
+                            if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
+                                ph.addLast("authHandler", httpAuthHandler);
+                            }
+
+                            ph.addLast("serverHandler", httpServerHandler);
                         }
 
                     })

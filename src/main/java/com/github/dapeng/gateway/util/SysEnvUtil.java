@@ -9,7 +9,7 @@ package com.github.dapeng.gateway.util;
  */
 public class SysEnvUtil {
     private static final String KEY_SOA_ZOOKEEPER_HOST = "soa.zookeeper.host";
-    private static final String KEY_OPEN_AUTH_ENABLE = "open.auth.enable";
+    private static final String KEY_OPEN_AUTH_ENABLE = "soa.open.auth.enable";
 
 
     public static final String SOA_ZOOKEEPER_HOST = get(KEY_SOA_ZOOKEEPER_HOST, "");
