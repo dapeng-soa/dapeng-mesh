@@ -70,6 +70,36 @@ public class PostUtil {
         }
     }
 
+    /**
+     * 同步 postSync
+     *
+     * @throws Exception throw exception
+     */
+    public static String postSync(String service,
+                                  String version,
+                                  String method,
+                                  String parameter,
+                                  FullHttpRequest req,
+                                  Map<String, String> cookies) throws Exception {
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
+
+        OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
+
+        if (bizService == null) {
+            LOGGER.error("bizService not found[service:" + service + ", version:" + version + "]");
+            throw new SoaException(SoaCode.NoMatchedService);
+        }
+
+        fillInvocationCtx(invocationCtx, req);
+
+        JsonPost jsonPost = new JsonPost(service, version, method, true);
+        try {
+            return jsonPost.callServiceMethod(parameter, bizService);
+        } finally {
+            InvocationContextImpl.Factory.removeCurrentInstance();
+        }
+    }
+
     private static InvocationContext createInvocationCtx(String service, String version, String method, FullHttpRequest req, Map<String, String> cookies) {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.serviceName(service);
@@ -125,5 +155,7 @@ public class PostUtil {
     private static int getEnvTimeOut() {
         return (int) SoaSystemEnvProperties.SOA_SERVICE_TIMEOUT;
     }
+
+
 }
 

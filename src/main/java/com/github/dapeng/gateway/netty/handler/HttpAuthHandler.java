@@ -3,16 +3,15 @@ package com.github.dapeng.gateway.netty.handler;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
-import com.github.dapeng.gateway.http.match.UrlMappingResolverNew;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.util.InvokeUtil;
+import com.github.dapeng.gateway.util.PostUtil;
 import com.today.api.admin.OpenAdminServiceClient;
 import com.today.api.admin.request.CheckGateWayAuthRequest;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
@@ -30,6 +29,9 @@ public class HttpAuthHandler extends ChannelInboundHandlerAdapter {
 
     private final OpenAdminServiceClient adminService = new OpenAdminServiceClient();
 
+    private static final String ADMIN_SERVICE_NAME = "com.today.api.admin.service.OpenAdminService";
+    private static final String ADMIN_VERSION_NAME = "1.0.0";
+    private static final String ADMIN_METHOD_NAME = "checkGateWayAuth";
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -62,7 +64,14 @@ public class HttpAuthHandler extends ChannelInboundHandlerAdapter {
      *
      * @param context request 请求上下文
      */
-    private void authSecret(RequestContext context, ChannelHandlerContext ctx) throws SoaException {
+    private void authSecret(RequestContext context, ChannelHandlerContext ctx) throws Exception {
+
+        Set<String> list = WhiteListHandler.getServiceWhiteList();
+
+        if (!list.contains(context.service().get())) {
+            throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
+        }
+
         String serviceName = context.service().get();
         String apiKey = context.apiKey().get();
         String secret = context.secret().get();
@@ -71,38 +80,43 @@ public class HttpAuthHandler extends ChannelInboundHandlerAdapter {
         String secret2 = "".equals(context.secret2().get()) ? null : context.secret2().get();
         String remoteIp = InvokeUtil.getIpAddress(context.request(), ctx);
 
-//        setCallInvocationTimeOut();
+        String requestJson = buildRequetJson(context, ctx);
 
         if (logger.isDebugEnabled()) {
             logger.debug("apiKey: {}, secret: {} , timestamp: {}, secret2: {} , parameter: {} ", apiKey, secret, timestamp, secret2, parameter);
         }
+
         try {
-            checkSecret(serviceName, apiKey, secret, timestamp, parameter, secret2, remoteIp);
+            PostUtil.postSync(ADMIN_SERVICE_NAME, ADMIN_VERSION_NAME, ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
         } catch (SoaException e) {
-            //todo
             logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, context.version().get(), context.method().get(), InvokeUtil.getCookiesFromParameter(context));
             throw e;
         }
     }
 
-    private void checkSecret(String serviceName, String apiKey, String secret, String timestamp, String parameter, String secret2, String ip) throws SoaException {
-        Set<String> list = WhiteListHandler.getServiceWhiteList();
-        if (null == list || !list.contains(serviceName)) {
-            throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
-        }
-        CheckGateWayAuthRequest checkGateWayAuthRequest = new CheckGateWayAuthRequest();
-        checkGateWayAuthRequest.setApiKey(apiKey);
-        checkGateWayAuthRequest.setSecret(Optional.ofNullable(secret));
-        checkGateWayAuthRequest.setTimestamp(timestamp);
-        checkGateWayAuthRequest.setInvokeIp(ip);
-        checkGateWayAuthRequest.setParameter(Optional.ofNullable(parameter));
-        checkGateWayAuthRequest.setSecret2(Optional.ofNullable(secret2));
+    private String buildRequetJson(RequestContext context, ChannelHandlerContext ctx) {
+        String apiKey = context.apiKey().get();
+        String secret = context.secret().get();
+        String timestamp = context.timestamp().get();
+        String parameter = context.parameter().get();
+        String secret2 = "".equals(context.secret2().get()) ? null : context.secret2().get();
+        String remoteIp = InvokeUtil.getIpAddress(context.request(), ctx);
 
-        adminService.checkGateWayAuth(checkGateWayAuthRequest);
+        StringBuilder jsonBuilder = new StringBuilder();
+
+        jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey)
+                .append("\",\"timestamp\": \"").append(timestamp)
+                .append("\",\"secret\": \"").append(secret)
+                .append("\",\"invokeIp\": \"").append(remoteIp)
+                .append("\",\"parameter\": \"").append(parameter);
+        if (secret2 != null) {
+            jsonBuilder.append("\",\"secret2\": \"").append(parameter);
+
+        }
+        jsonBuilder.append("}}}");
+        String json = jsonBuilder.toString();
+        logger.info("request auth json : {}", json);
+        return json;
     }
 
-    /*private void setCallInvocationTimeOut() {
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
-        invocationCtx.timeout(10000);
-    }*/
 }
