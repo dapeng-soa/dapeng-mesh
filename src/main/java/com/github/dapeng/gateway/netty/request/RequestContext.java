@@ -1,15 +1,21 @@
 package com.github.dapeng.gateway.netty.request;
 
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author maple 2018.09.18 上午10:20
  */
 public class RequestContext {
+    /**
+     * httpRequest
+     */
+    private FullHttpRequest request;
     /**
      * 请求方式
      */
@@ -73,6 +79,14 @@ public class RequestContext {
      */
     private Map<String, String> arguments = new HashMap<>();
 
+
+    public FullHttpRequest request() {
+        return request;
+    }
+
+    public void request(FullHttpRequest request) {
+        this.request = request;
+    }
 
     public HttpMethod httpMethod() {
         return httpMethod;
@@ -185,5 +199,11 @@ public class RequestContext {
 
     public void arguments(Map<String, String> arguments) {
         this.arguments.putAll(arguments);
+    }
+
+    public String argumentToString() {
+        return arguments.entrySet().stream()
+                .map(argument -> "KV:[" + argument.getKey() + " -> " + argument.getValue() + "]")
+                .collect(Collectors.joining(","));
     }
 }

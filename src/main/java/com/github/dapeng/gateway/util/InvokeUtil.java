@@ -1,6 +1,7 @@
 package com.github.dapeng.gateway.util;
 
 import com.github.dapeng.gateway.netty.request.PostRequestInfo;
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -51,20 +52,20 @@ public class InvokeUtil {
     }
 
 
-    public static Map<String, String> getCookiesFromParameter(PostRequestInfo info) {
+    public static Map<String, String> getCookiesFromParameter(RequestContext context) {
         Map<String, String> cookies = new HashMap<>(16);
-        if (info == null) {
+        if (context == null) {
             return cookies;
         }
-        String cookieStoreId = info.getArguments().get("cookie_storeId");
+        String cookieStoreId = context.arguments().get("cookie_storeId");
         if (cookieStoreId != null) {
             cookies.put("storeId", cookieStoreId);
         }
-        String cookiePosId = info.getArguments().get("cookie_posId");
+        String cookiePosId = context.arguments().get("cookie_posId");
         if (cookiePosId != null) {
             cookies.put("posId", cookiePosId);
         }
-        String cookieOperatorId = info.getArguments().get("cookie_operatorId");
+        String cookieOperatorId = context.arguments().get("cookie_operatorId");
         if (cookieOperatorId != null) {
             cookies.put("operatorId", cookieOperatorId);
         }

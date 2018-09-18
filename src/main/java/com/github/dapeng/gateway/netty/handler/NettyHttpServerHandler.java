@@ -3,6 +3,7 @@ package com.github.dapeng.gateway.netty.handler;
 import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
 import com.github.dapeng.gateway.http.HttpPostProcessor;
 import com.github.dapeng.gateway.http.HttpResponseEntity;
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import io.netty.channel.ChannelHandler;
@@ -16,35 +17,36 @@ import org.slf4j.LoggerFactory;
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class NettyHttpServerHandler extends SimpleChannelInboundHandler<RequestContext> {
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
 
     private final HttpGetHeadProcessor getHandler = new HttpGetHeadProcessor();
     private final HttpPostProcessor postHandler = new HttpPostProcessor();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) throws Exception {
         try {
-            dispatchRequest(httpRequest, ctx);
+            dispatchRequest(context, ctx);
         } catch (Exception e) {
             logger.error("网关处理请求失败: " + e.getMessage(), e);
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void dispatchRequest(FullHttpRequest request, ChannelHandlerContext ctx) {
-        HttpMethod method = request.method();
-        boolean isPost = HttpMethod.POST.equals(method);
-        if (isPost) {
-            postHandler.handlerPostRequest(request, ctx);
+    private void dispatchRequest(RequestContext context, ChannelHandlerContext ctx) {
+
+        HttpMethod httpMethod = context.httpMethod();
+
+        if (HttpMethod.POST.equals(httpMethod)) {
+            postHandler.handlerPostRequest(context, ctx);
             return;
         }
-        boolean isGet = HttpMethod.GET.equals(method);
-        if (isGet || HttpMethod.HEAD.equals(method)) {
-            handlerGetAndHead(request, ctx);
+        boolean isGet = HttpMethod.GET.equals(httpMethod);
+        if (isGet || HttpMethod.HEAD.equals(httpMethod)) {
+            handlerGetAndHead(context, ctx);
             return;
         }
-        HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.RequestTypeNotSupport), request, HttpResponseStatus.OK);
+        HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.RequestTypeNotSupport), context.request(), HttpResponseStatus.OK);
     }
 
 
