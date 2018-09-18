@@ -2,7 +2,7 @@ package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.http.GetUrlController;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
-import com.github.dapeng.gateway.netty.handler.HttpAuthHandler;
+import com.github.dapeng.gateway.netty.handler.BizAuthHandler;
 import com.github.dapeng.gateway.netty.handler.HttpRequestHandler;
 import com.github.dapeng.gateway.netty.handler.HttpServerProcessHandler;
 import com.github.dapeng.gateway.util.Constants;
@@ -61,7 +61,7 @@ public class NettyHttpServer {
         HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
         HttpServerProcessHandler httpServerHandler = new HttpServerProcessHandler();
 
-        HttpAuthHandler httpAuthHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new HttpAuthHandler() : null;
+        BizAuthHandler bizAuthHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new BizAuthHandler() : null;
 
 
         try {
@@ -81,9 +81,8 @@ public class NettyHttpServer {
                             ph.addLast("requestHandler", httpRequestHandler);
 
                             if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
-                                ph.addLast("authHandler", httpAuthHandler);
+                                ph.addLast("authHandler", bizAuthHandler);
                             }
-
                             ph.addLast("serverHandler", httpServerHandler);
                         }
 

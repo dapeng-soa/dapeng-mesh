@@ -22,8 +22,8 @@ import java.util.Set;
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class HttpAuthHandler extends ChannelInboundHandlerAdapter {
-    private static Logger logger = LoggerFactory.getLogger(HttpAuthHandler.class);
+public class BizAuthHandler extends ChannelInboundHandlerAdapter {
+    private static Logger logger = LoggerFactory.getLogger(BizAuthHandler.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
