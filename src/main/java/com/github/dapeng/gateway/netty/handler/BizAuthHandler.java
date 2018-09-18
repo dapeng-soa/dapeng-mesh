@@ -1,11 +1,14 @@
 package com.github.dapeng.gateway.netty.handler;
 
 import com.github.dapeng.core.InvocationContextImpl;
+import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
+import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.*;
+import com.sun.xml.internal.rngom.ast.builder.BuildException;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -77,8 +80,15 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
         }
 
         try {
-            String s = PostUtil.postSync(Constants.ADMIN_SERVICE_NAME, Constants.ADMIN_VERSION_NAME, Constants.ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
-            logger.info(s);
+            String responseCode = PostUtil.postSync(Constants.ADMIN_SERVICE_NAME, Constants.ADMIN_VERSION_NAME, Constants.ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
+
+            //没有成功的错误
+            if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(responseCode)) {
+                if (responseCode == null) {
+                    throw new SoaException(SoaCode.ServerUnKnown);
+                }
+                throw buildExceptionByCode(responseCode);
+            }
         } catch (SoaException e) {
             logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, context.version().get(), context.method().get(), InvokeUtil.getCookiesFromParameter(context));
             throw e;
@@ -96,15 +106,19 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
         String secret2 = context.secret2().orElse(null);
         String remoteIp = InvokeUtil.getIpAddress(context.request(), ctx);
 
+        String parameter2 = parameter.replaceAll("\"", "\\\\\"");
+
+        logger.info("parameter2: {}", parameter2);
+
         StringBuilder jsonBuilder = new StringBuilder();
 
         jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
                 .append(",\"timestamp\": \"").append(timestamp).append("\"")
                 .append(",\"secret\": \"").append(secret).append("\"")
                 .append(",\"invokeIp\": \"").append(remoteIp).append("\"")
-                .append(",\"parameter\": \"").append(parameter).append("\"");
+                .append(",\"parameter\":\"").append(parameter2).append("\"");
         if (secret2 != null) {
-            jsonBuilder.append(",\"secret2\": \"").append(parameter).append("\"");
+            jsonBuilder.append(",\"secret2\": \"").append(secret2).append("\"");
 
         }
         jsonBuilder.append("}}}");
@@ -119,6 +133,21 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
     private void fillInvocationProxy(RequestContext context, ChannelHandlerContext ctx) {
         SoaInvocationProxy invocationProxy = new SoaInvocationProxy(context, ctx);
         InvocationContextImpl.Factory.setInvocationContextProxy(invocationProxy);
+    }
+
+
+    private SoaException buildExceptionByCode(String errorCode) {
+        switch (errorCode) {
+            case "Err-GateWay-001":
+            case "Err-GateWay-002":
+            case "Err-GateWay-003":
+            case "Err-GateWay-005":
+                return new SoaException(errorCode, "认证失败，非法请求");
+            case "Err-GateWay-004":
+                return new SoaException(errorCode, "Api网关请求超时");
+            default:
+                return new SoaException(errorCode, "调用admin鉴权未知错误");
+        }
     }
 
 }

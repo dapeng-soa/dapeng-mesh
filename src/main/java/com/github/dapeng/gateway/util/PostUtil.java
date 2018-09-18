@@ -94,10 +94,8 @@ public class PostUtil {
 
         JsonPost jsonPost = new JsonPost(service, version, method, true);
         try {
-            String result= jsonPost.callServiceMethod(parameter, bizService);
-            String s = invocationCtx.lastInvocationInfo().responseCode();
-            System.out.println(s);
-            return result;
+            jsonPost.callServiceMethod(parameter, bizService);
+            return invocationCtx.lastInvocationInfo().responseCode();
         } finally {
             InvocationContextImpl.Factory.removeCurrentInstance();
         }
