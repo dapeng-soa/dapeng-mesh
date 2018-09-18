@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class NettyHttpServerHandler extends SimpleChannelInboundHandler<RequestContext> {
-    private static Logger logger = LoggerFactory.getLogger(NettyHttpServerHandler.class);
+public class HttpServerProcessHandler extends SimpleChannelInboundHandler<RequestContext> {
+    private static Logger logger = LoggerFactory.getLogger(HttpServerProcessHandler.class);
 
     private final HttpGetHeadProcessor getHandler = new HttpGetHeadProcessor();
     private final HttpPostProcessor postHandler = new HttpPostProcessor();
@@ -53,9 +53,9 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<RequestC
     /**
      * handler get 和 head 请求
      */
-    private void handlerGetAndHead(FullHttpRequest request, ChannelHandlerContext ctx) {
-        HttpResponseEntity entity = getHandler.handlerRequest(request);
-        HttpProcessorUtils.sendHttpResponse(ctx, entity, request);
+    private void handlerGetAndHead(RequestContext context, ChannelHandlerContext ctx) {
+        HttpResponseEntity entity = getHandler.handlerRequest(context);
+        HttpProcessorUtils.sendHttpResponse(ctx, entity, context);
     }
 
 

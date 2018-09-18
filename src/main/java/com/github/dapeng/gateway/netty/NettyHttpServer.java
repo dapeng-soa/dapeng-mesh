@@ -1,9 +1,8 @@
 package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.http.GetUrlController;
-import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
-import com.github.dapeng.gateway.netty.handler.NettyHttpServerHandler;
+import com.github.dapeng.gateway.netty.handler.HttpServerProcessHandler;
 import com.github.dapeng.gateway.util.Constants;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -56,7 +55,7 @@ public class NettyHttpServer {
         workerGroup = new NioEventLoopGroup(Constants.DEFAULT_IO_THREADS, new DefaultThreadFactory("netty-server-worker-group", Boolean.TRUE));
 
         // sharable handler
-        NettyHttpServerHandler httpServerHandler = new NettyHttpServerHandler();
+        HttpServerProcessHandler httpServerHandler = new HttpServerProcessHandler();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap

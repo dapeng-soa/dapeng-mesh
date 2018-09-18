@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.http;
 
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -15,9 +16,8 @@ public class HttpGetHeadProcessor {
 
     private GetUrlController controller = new GetUrlController();
 
-    public HttpResponseEntity handlerRequest(FullHttpRequest request) {
-        String url = processUrl(request.uri());
-
+    public HttpResponseEntity handlerRequest(RequestContext context) {
+        String url = processUrl(context.requestUrl());
 
         switch (url) {
             case Constants.GET_HEALTH_CHECK_URL:

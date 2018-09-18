@@ -24,7 +24,6 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
         FullHttpRequest request = (FullHttpRequest) msg;
 
         RequestContext context = new RequestContext();
-        context.request(request);
         try {
             HttpMethod httpMethod = request.method();
             String url = request.uri();

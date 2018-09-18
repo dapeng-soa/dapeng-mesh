@@ -1,6 +1,7 @@
 package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.SoaException;
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
@@ -17,8 +18,8 @@ public class HttpProcessorUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpProcessorUtils.class);
 
 
-    public static void sendHttpResponse(ChannelHandlerContext ctx, HttpResponseEntity entity, FullHttpRequest request) {
-        sendHttpResponse(ctx, entity.getContent(), request, entity.getStatus());
+    public static void sendHttpResponse(ChannelHandlerContext ctx, HttpResponseEntity entity, RequestContext context) {
+        sendHttpResponse(ctx, entity.getContent(), context.request(), entity.getStatus());
     }
 
 
