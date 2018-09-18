@@ -1,16 +1,13 @@
 package com.github.dapeng.gateway.http.match;
 
-import com.github.dapeng.core.SoaException;
-import com.github.dapeng.gateway.netty.request.PostRequestInfo;
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.Constants;
-import com.github.dapeng.gateway.util.DapengMeshCode;
-import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,95 +29,100 @@ public class UrlMappingResolver {
     private static final String DEFAULT_URL_PREFIX = "api";
 
 
+    public static void handlerPostUrl(FullHttpRequest request, RequestContext context) {
+        Matcher matcherFirst = POST_GATEWAY_PATTERN.matcher(request.uri());
+
+        if (matcherFirst.matches()) {
+            handlerMappingUrl(matcherFirst, request, context);
+            return;
+        }
+        Matcher matcherSecond = POST_GATEWAY_PATTERN_1.matcher(request.uri());
+
+        if (matcherSecond.matches()) {
+            handlerRequestParam(matcherSecond, request, context);
+            return;
+        }
+
+        context.isLegal(false);
+        context.cause("no match is available");
+    }
+
+
     /**
      * 解析 rest风格的请求,包括apiKey 和 没有 apiKey 的 请求
      * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId/{apiKey}?cookie=234&user=maple
      * etc. /api/com.today.soa.idgen.service.IDService/1.0.0/genId
+     *
+     * @param request
+     * @param context
      */
-    public static PostRequestInfo handlerMappingUrl(String url, FullHttpRequest request) throws SoaException {
-        Matcher matcher = POST_GATEWAY_PATTERN.matcher(url);
-        if (matcher.matches()) {
-            String prefix = matcher.group(1);
-            String serviceName = matcher.group(2);
-            String versionName = matcher.group(3);
-            String methodName = matcher.group(4);
-            String apiKey = matcher.group(5);
+    private static void handlerMappingUrl(Matcher matcher, FullHttpRequest request, RequestContext context) {
+        String prefix = matcher.group(1);
+        String serviceName = matcher.group(2);
+        String versionName = matcher.group(3);
+        String methodName = matcher.group(4);
+        String apiKey = matcher.group(5);
 
-            if (apiKey == null) {
-                return handlerRestNoAuthArgument(prefix, serviceName, versionName, methodName, request);
-            }
-            UrlArgumentHolder holder = doResolveArgument(apiKey);
+        if (apiKey == null) {
+            UrlArgumentHolder holder = doResolveArgument(methodName);
+            context.urlPrefix(prefix);
+            context.service(serviceName);
+            context.version(versionName);
+            context.method(holder.getLastPath());
 
-            String timestamp = RequestParser.fastParseParam(request, "timestamp");
-            String secret = RequestParser.fastParseParam(request, "secret");
-            String secret2 = RequestParser.fastParseParam(request, "secret2");
-            String parameter = RequestParser.fastParseParam(request, "parameter");
-
-
-            return new PostRequestInfo(prefix, serviceName, versionName, methodName, holder.getLastPath(), timestamp, secret, secret2, parameter, holder.getArgumentMap());
+            context.arguments(holder.getArgumentMap());
+            return;
         }
-        return null;
+        UrlArgumentHolder holder = doResolveArgument(apiKey);
+
+        String timestamp = RequestParser.fastParseParam(request, "timestamp");
+        String secret = RequestParser.fastParseParam(request, "secret");
+        String secret2 = RequestParser.fastParseParam(request, "secret2");
+        String parameter = RequestParser.fastParseParam(request, "parameter");
+
+        context.urlPrefix(prefix);
+        context.service(serviceName);
+        context.version(versionName);
+        context.method(methodName);
+        context.apiKey(holder.getLastPath());
+        context.timestamp(timestamp);
+        context.secret(secret);
+        context.secret2(secret2);
+        context.parameter(parameter);
+        context.arguments(holder.getArgumentMap());
     }
-
-
-    /**
-     * 处理 rest 风格url 不带 apiKey (无鉴权模式)
-     * 根据系统变量 {@link SysEnvUtil#KEY_OPEN_AUTH_ENABLE} 判断是否支持此模式请求.
-     */
-    private static PostRequestInfo handlerRestNoAuthArgument(String prefix, String serviceName, String versionName, String methodName, FullHttpRequest request) throws SoaException {
-        boolean authEnable = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE);
-        if (authEnable) {
-            throw new SoaException(DapengMeshCode.OpenAuthEnableError);
-        }
-        UrlArgumentHolder holder = doResolveArgument(methodName);
-
-
-        return new PostRequestInfo(prefix, serviceName, versionName, holder.getLastPath(), null, holder.getArgumentMap());
-    }
-
 
     /**
      * 解析 requestParam 风格的请求,包括apiKey 和 没有 apiKey 的 请求
      * etc. /api/{apiKey}?cookie=234&user=maple
      * etc. /api?cookie=234&user=maple
      */
-    public static PostRequestInfo handlerRequestParam(String url, FullHttpRequest request) throws SoaException {
-        Matcher matcher = POST_GATEWAY_PATTERN_1.matcher(url);
-        if (matcher.matches()) {
-            String prefix = matcher.group(1);
-            String apiKey = matcher.group(2);
+    private static void handlerRequestParam(Matcher matcher, FullHttpRequest request, RequestContext context) {
+        String prefix = matcher.group(1);
+        String apiKey = matcher.group(2);
 
-            // prefix 必须以 api开头，否则为非法请求
-            if (!prefix.equals(DEFAULT_URL_PREFIX)) {
-                return null;
-            }
-
-            if (apiKey == null) {
-                return handlerParamNoAuthArgument(prefix, request);
-            }
-
-            UrlArgumentHolder holder = doResolveArgument(apiKey);
-            Map<String, String> arguments = holder.getArgumentMap();
-            apiKey = holder.getLastPath();
-            return RequestParser.fastParse(prefix, apiKey, request, arguments);
+        // prefix 必须以 api开头，否则为非法请求
+        if (!prefix.equals(DEFAULT_URL_PREFIX)) {
+            context.isLegal(false);
+            context.cause("prefix 必须以 api开头");
+            return;
         }
-        return null;
-    }
 
-    /**
-     * 处理 requestParam 风格url 不带 apiKey (无鉴权模式)
-     * 根据系统变量 {@link SysEnvUtil#KEY_OPEN_AUTH_ENABLE} 判断是否支持此模式请求.
-     */
-    private static PostRequestInfo handlerParamNoAuthArgument(String prefix, FullHttpRequest request) throws SoaException {
-        boolean authEnable = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE);
-        if (authEnable) {
-            throw new SoaException(DapengMeshCode.OpenAuthEnableError);
+        if (apiKey == null) {
+            UrlArgumentHolder holder = doResolveArgument(prefix);
+            context.urlPrefix(holder.getLastPath());
+            context.arguments(holder.getArgumentMap());
+            RequestParser.fastParse(request, context);
+            return;
         }
-        UrlArgumentHolder holder = doResolveArgument(prefix);
-        return RequestParser.fastParse(holder.getLastPath(), null, request, holder.getArgumentMap());
+        UrlArgumentHolder holder = doResolveArgument(apiKey);
+
+        context.urlPrefix(prefix);
+        context.apiKey(holder.getLastPath());
+        context.arguments(holder.getArgumentMap());
+
+        RequestParser.fastParse(request, context);
     }
-
-
     /**
      * 解析url后携带参数,封装为 Map
      */

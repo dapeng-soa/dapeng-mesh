@@ -22,4 +22,9 @@ public class Constants {
     public static final String ECHO_PREFIX = "/api/echo";
 
 
+    public static final String ADMIN_SERVICE_NAME = "com.today.api.admin.service.OpenAdminService";
+    public static final String ADMIN_VERSION_NAME = "1.0.0";
+    public static final String ADMIN_METHOD_NAME = "checkGateWayAuth";
+
+
 }

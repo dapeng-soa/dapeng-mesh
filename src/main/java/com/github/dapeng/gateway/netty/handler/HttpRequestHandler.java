@@ -1,7 +1,7 @@
 package com.github.dapeng.gateway.netty.handler;
 
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
-import com.github.dapeng.gateway.http.match.UrlMappingResolverNew;
+import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.DapengMeshCode;
 import io.netty.channel.*;
@@ -32,7 +32,7 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
             context.requestUrl(url);
             // POST FIRST
             if (HttpMethod.POST.equals(httpMethod)) {
-                UrlMappingResolverNew.handlerPostUrl(request, context);
+                UrlMappingResolver.handlerPostUrl(request, context);
             }
 
 
