@@ -21,7 +21,9 @@ public enum DapengMeshCode implements SoaBaseCodeInterface {
     AuthSecretError("Err-Mesh-507", "网关鉴权失败,可能原因是不正确的apiKey或加密格式"),
     OpenAuthEnableError("Err-Mesh-508", "网关接口需要鉴权,未开放无需鉴权功能"),
     EchoUnknowEx("Err-Mesh-509", "Echo接口请求url格式不正确"),
-    MeshUnknowEx("Err-Mesh-510", "ApiMesh未知异常");
+    MeshUnknowEx("Err-Mesh-510", "ApiMesh未知异常"),
+    AuthParameterEx("Err-Mesh-511", "请求校验参数为空,请检查  api-key,timestamp"),
+    AuthSecretEx("Err-Mesh-512", "请求校验参数secret,secret2 至少有一个不为空");
 
 
     private String code;

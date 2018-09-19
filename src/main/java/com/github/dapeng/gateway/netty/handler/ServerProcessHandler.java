@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class HttpServerProcessHandler extends SimpleChannelInboundHandler<RequestContext> {
-    private static Logger logger = LoggerFactory.getLogger(HttpServerProcessHandler.class);
+public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestContext> {
+    private static Logger logger = LoggerFactory.getLogger(ServerProcessHandler.class);
 
     private final HttpGetHeadProcessor getHandler = new HttpGetHeadProcessor();
     private final HttpPostProcessor postHandler = new HttpPostProcessor();

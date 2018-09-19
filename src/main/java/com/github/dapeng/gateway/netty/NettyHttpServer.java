@@ -2,9 +2,9 @@ package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.http.GetUrlController;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
-import com.github.dapeng.gateway.netty.handler.BizAuthHandler;
+import com.github.dapeng.gateway.netty.handler.AuthenticationHandler;
 import com.github.dapeng.gateway.netty.handler.HttpRequestHandler;
-import com.github.dapeng.gateway.netty.handler.HttpServerProcessHandler;
+import com.github.dapeng.gateway.netty.handler.ServerProcessHandler;
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -59,10 +59,9 @@ public class NettyHttpServer {
 
         // sharable handler
         HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
-        HttpServerProcessHandler httpServerHandler = new HttpServerProcessHandler();
+        ServerProcessHandler serverProcessHandler = new ServerProcessHandler();
 
-        BizAuthHandler bizAuthHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new BizAuthHandler() : null;
-
+        AuthenticationHandler authenticationHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new AuthenticationHandler() : null;
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -81,9 +80,9 @@ public class NettyHttpServer {
                             ph.addLast("requestHandler", httpRequestHandler);
 
                             if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
-                                ph.addLast("authHandler", bizAuthHandler);
+                                ph.addLast("authenticationHandler", authenticationHandler);
                             }
-                            ph.addLast("serverHandler", httpServerHandler);
+                            ph.addLast("serverHandler", serverProcessHandler);
                         }
 
                     })

@@ -8,7 +8,6 @@ import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.*;
-import com.sun.xml.internal.rngom.ast.builder.BuildException;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -17,14 +16,15 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class BizAuthHandler extends ChannelInboundHandlerAdapter {
-    private static Logger logger = LoggerFactory.getLogger(BizAuthHandler.class);
+public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -61,18 +61,21 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
         if (!list.contains(context.service().get())) {
             throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
         }
+        Optional<String> serviceName = context.service();
+        Optional<String> apiKey = context.apiKey();
+        Optional<String> secret = context.secret();
+        Optional<String> timestamp = context.timestamp();
+        Optional<String> parameter = context.parameter();
+        Optional<String> secret2 = context.secret2();
+
+        failIfNotPresent(serviceName, apiKey, timestamp);
+
+        if (!secret.isPresent() && !secret2.isPresent()) {
+            throw new SoaException(DapengMeshCode.AuthSecretEx);
+        }
 
         fillInvocationProxy(context, ctx);
-
-        String serviceName = context.service().get();
-        String apiKey = context.apiKey().get();
-        String secret = context.secret().get();
-        String timestamp = context.timestamp().get();
-        String parameter = context.parameter().get();
-        String secret2 = context.secret2().orElse(null);
-
         String remoteIp = InvokeUtil.getIpAddress(context.request(), ctx);
-
         String requestJson = buildRequestJson(context, ctx);
 
         if (logger.isDebugEnabled()) {
@@ -98,34 +101,47 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+
     private String buildRequestJson(RequestContext context, ChannelHandlerContext ctx) {
         String apiKey = context.apiKey().get();
-        String secret = context.secret().get();
         String timestamp = context.timestamp().get();
         String parameter = context.parameter().get();
-        String secret2 = context.secret2().orElse(null);
         String remoteIp = InvokeUtil.getIpAddress(context.request(), ctx);
 
-        String parameter2 = parameter.replaceAll("\"", "\\\\\"");
-
-        logger.info("parameter2: {}", parameter2);
+        String secret = context.secret().orElse(null);
+        String secret2 = context.secret2().orElse(null);
 
         StringBuilder jsonBuilder = new StringBuilder();
 
+        if (secret != null) {
+            jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
+                    .append(",\"timestamp\": \"").append(timestamp).append("\"")
+                    .append(",\"secret\": \"").append(secret).append("\"")
+                    .append(",\"invokeIp\": \"").append(remoteIp).append("\"");
+
+            if (secret2 != null) {
+                String parameter2 = parameter.replaceAll("\"", "\\\\\"");
+
+                jsonBuilder.append(",\"parameter\":\"").append(parameter2).append("\"")
+                        .append(",\"secret2\": \"").append(secret2).append("\"");
+
+                logger.info("parameter2: {}", parameter2);
+            }
+            jsonBuilder.append("}}}");
+            return jsonBuilder.toString();
+        }
+
+        String parameter2 = parameter.replaceAll("\"", "\\\\\"");
         jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
                 .append(",\"timestamp\": \"").append(timestamp).append("\"")
                 .append(",\"secret\": \"").append(secret).append("\"")
                 .append(",\"invokeIp\": \"").append(remoteIp).append("\"")
-                .append(",\"parameter\":\"").append(parameter2).append("\"");
-        if (secret2 != null) {
-            jsonBuilder.append(",\"secret2\": \"").append(secret2).append("\"");
-
-        }
+                .append(",\"parameter\":\"").append(parameter2).append("\"")
+                .append(",\"secret2\": \"").append(secret2).append("\"");
         jsonBuilder.append("}}}");
-        String json = jsonBuilder.toString();
-        logger.info("request auth json : {}", json);
-        return json;
+        return jsonBuilder.toString();
     }
+
 
     /**
      * fillInvocationProxy
@@ -150,4 +166,14 @@ public class BizAuthHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+
+    @SafeVarargs
+    private final void failIfNotPresent(Optional<String>... optionals) throws SoaException {
+        for (Optional<String> optional : optionals) {
+
+            if (!optional.isPresent()) {
+                throw new SoaException(DapengMeshCode.AuthParameterEx);
+            }
+        }
+    }
 }
