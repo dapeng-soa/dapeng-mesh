@@ -93,7 +93,7 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
                 throw buildExceptionByCode(responseCode);
             }
         } catch (SoaException e) {
-            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}] -> ", remoteIp, apiKey, timestamp, serviceName, context.version().get(), context.method().get(), InvokeUtil.getCookiesFromParameter(context));
+            logger.error("request failed:: Invoke ip [ {} ] apiKey:[ {} ] call timestamp:[{}] call[ {}:{}:{} ] cookies:[{}]", remoteIp, apiKey, timestamp, serviceName, context.version().get(), context.method().get(), InvokeUtil.getCookiesFromParameter(context));
             throw e;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

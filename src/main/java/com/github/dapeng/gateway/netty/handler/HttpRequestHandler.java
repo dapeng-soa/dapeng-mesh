@@ -37,7 +37,7 @@ public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
             } else {
                 boolean isGet = HttpMethod.GET.equals(httpMethod);
                 if (isGet || HttpMethod.HEAD.equals(httpMethod)) {
-                    logger.info("For the time being, no message to log for Get-method");
+                    logger.debug("For the time being, no message to log for Get-method");
                 }
             }
             super.channelRead(ctx, context);
