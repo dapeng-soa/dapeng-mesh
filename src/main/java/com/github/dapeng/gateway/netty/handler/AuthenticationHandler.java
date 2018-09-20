@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * @author maple 2018.08.23 上午10:01
@@ -25,6 +26,7 @@ import java.util.Set;
 @ChannelHandler.Sharable
 public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
+    private static final Pattern PATTERN = Pattern.compile("\"");
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -101,7 +103,13 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-
+    /**
+     * build request json
+     *
+     * @param context request context
+     * @param ctx     netty channel ctx
+     * @return request json
+     */
     private String buildRequestJson(RequestContext context, ChannelHandlerContext ctx) {
         String apiKey = context.apiKey().get();
         String timestamp = context.timestamp().get();
@@ -120,7 +128,7 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
                     .append(",\"invokeIp\": \"").append(remoteIp).append("\"");
 
             if (secret2 != null) {
-                String parameter2 = parameter.replaceAll("\"", "\\\\\"");
+                String parameter2 = PATTERN.matcher(parameter).replaceAll("\\\\\"");
 
                 jsonBuilder.append(",\"parameter\":\"").append(parameter2).append("\"")
                         .append(",\"secret2\": \"").append(secret2).append("\"");
@@ -128,18 +136,21 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
                 logger.info("parameter2: {}", parameter2);
             }
             jsonBuilder.append("}}}");
-            return jsonBuilder.toString();
-        }
+        } else {
 
-        String parameter2 = parameter.replaceAll("\"", "\\\\\"");
-        jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
-                .append(",\"timestamp\": \"").append(timestamp).append("\"")
-                .append(",\"secret\": \"").append(secret).append("\"")
-                .append(",\"invokeIp\": \"").append(remoteIp).append("\"")
-                .append(",\"parameter\":\"").append(parameter2).append("\"")
-                .append(",\"secret2\": \"").append(secret2).append("\"");
-        jsonBuilder.append("}}}");
-        return jsonBuilder.toString();
+            String parameter2 = PATTERN.matcher(parameter).replaceAll("\\\\\"");
+            jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
+                    .append(",\"timestamp\": \"").append(timestamp).append("\"")
+                    .append(",\"invokeIp\": \"").append(remoteIp).append("\"")
+                    .append(",\"parameter\":\"").append(parameter2).append("\"")
+                    .append(",\"secret2\": \"").append(secret2).append("\"");
+            jsonBuilder.append("}}}");
+        }
+        String json = jsonBuilder.toString();
+        if (logger.isDebugEnabled()) {
+            logger.debug("call authentication json: {}", json);
+        }
+        return json;
     }
 
 
@@ -151,7 +162,12 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         InvocationContextImpl.Factory.setInvocationContextProxy(invocationProxy);
     }
 
-
+    /**
+     * build error exception from  rpc response code
+     *
+     * @param errorCode rpc response code
+     * @return exception
+     */
     private SoaException buildExceptionByCode(String errorCode) {
         switch (errorCode) {
             case "Err-GateWay-001":
@@ -166,7 +182,13 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-
+    /**
+     * optionals both must isPresent , otherwise will throw exception
+     *
+     * @param optionals parameter optionals
+     * @throws SoaException
+     * @see java.util.Optional
+     */
     @SafeVarargs
     private final void failIfNotPresent(Optional<String>... optionals) throws SoaException {
         for (Optional<String> optional : optionals) {
