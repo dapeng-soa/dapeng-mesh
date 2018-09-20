@@ -101,6 +101,12 @@
             <version>2.7.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -171,7 +177,8 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.10</version>
                 <configuration>
-                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:${project.version}</imageName>
+                    <!--todo version-->
+                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:2.0.6</imageName>
                     <dockerDirectory>${basedir}/docker</dockerDirectory>
                 </configuration>
                 <executions>

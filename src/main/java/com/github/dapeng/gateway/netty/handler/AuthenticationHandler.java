@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,13 +122,14 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
 
         StringBuilder jsonBuilder = new StringBuilder();
 
-        if (secret != null) {
+        if (secret != null && secret.length() > 0 && secret.trim().length() > 0) {
             jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
                     .append(",\"timestamp\": \"").append(timestamp).append("\"")
                     .append(",\"secret\": \"").append(secret).append("\"")
                     .append(",\"invokeIp\": \"").append(remoteIp).append("\"");
 
-            if (secret2 != null) {
+            //防止 secret2 空串
+            if (secret2 != null && secret2.length() > 0 && secret2.trim().length() > 0) {
                 String parameter2 = PATTERN.matcher(parameter).replaceAll("\\\\\"");
 
                 jsonBuilder.append(",\"parameter\":\"").append(parameter2).append("\"")
@@ -137,7 +139,6 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
             }
             jsonBuilder.append("}}}");
         } else {
-
             String parameter2 = PATTERN.matcher(parameter).replaceAll("\\\\\"");
             jsonBuilder.append("{\"body\": {\"request\": {\"apiKey\": \"").append(apiKey).append("\"")
                     .append(",\"timestamp\": \"").append(timestamp).append("\"")
