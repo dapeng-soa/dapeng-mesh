@@ -172,7 +172,7 @@
                 <version>0.4.10</version>
                 <configuration>
                     <!--todo version-->
-                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:2.0.6</imageName>
+                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:2.0.5</imageName>
                     <dockerDirectory>${basedir}/docker</dockerDirectory>
                 </configuration>
                 <executions>
