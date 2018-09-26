@@ -36,7 +36,7 @@ fi
 JMX="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1091 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 
 # JVM参数
-JVM_OPTS="-Dfile.encoding=UTF-8 -Dsun.jun.encoding=UTF-8 -Dname=$APP_NAME -Dio.netty.leakDetectionLevel=advanced -Xms512M -Xmx1024M -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDateStamps -Xloggc:$LOG_DIR/gc-$APP_NAME-$CURR_DATE.log -XX:+PrintGCDetails -XX:NewRatio=1 -XX:SurvivorRatio=30 -XX:+UseParallelGC -XX:+UseParallelOldGC -Dlog.dir=$APP_DIR/.."
+JVM_OPTS="-Dname=$APP_NAME -Dfile.encoding=UTF-8 -Dsun.jun.encoding=UTF-8 -Dio.netty.leakDetectionLevel=advanced -Xms512M -Xmx512M -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDateStamps -Xloggc:$LOG_DIR/gc-$APP_NAME-$CURR_DATE.log -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDetails -XX:NewRatio=1 -XX:SurvivorRatio=30 -XX:+UseParallelGC -XX:+UseParallelOldGC -Dlog.dir=$APP_DIR/.."
 
 # DP_SOA BASE路径
 SOA_BASE="-Dsoa.base=$APP_DIR/../ -Dsoa.run.mode=native"
