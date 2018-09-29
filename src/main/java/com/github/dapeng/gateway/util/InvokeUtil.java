@@ -4,10 +4,12 @@ import com.github.dapeng.gateway.netty.request.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.cookie.Cookie;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author with struy.
@@ -69,5 +71,23 @@ public class InvokeUtil {
             cookies.put("operatorId", cookieOperatorId);
         }
         return cookies;
+    }
+
+    /**
+     * 获取 Http 的 Cookies 值
+     */
+    public static Map<String, String> getHttpCookies(Set<Cookie> cookies) {
+        Map<String, String> cookieMap = new HashMap<>();
+        if (cookies == null || cookies.size() == 0) {
+            return cookieMap;
+        }
+        //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
+        cookies.forEach(cookie -> {
+            String key = cookie.name();
+            if (key.startsWith(Constants.COOKIES_PREFIX)) {
+                cookieMap.put(key.substring(key.indexOf("_")), cookie.value());
+            }
+        });
+        return cookieMap;
     }
 }

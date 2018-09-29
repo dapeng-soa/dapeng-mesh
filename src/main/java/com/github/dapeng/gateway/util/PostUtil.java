@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import static com.github.dapeng.gateway.util.InvokeUtil.*;
+
 /**
  * desc: PostUtil
  *
@@ -40,7 +42,7 @@ public class PostUtil {
         String method = context.method().get();
         FullHttpRequest request = context.request();
         Set<Cookie> cookies = context.cookies();
-        return doPostAsync(service, version, method, parameter, request, InvokeUtil.getCookiesFromParameter(context), cookies);
+        return doPostAsync(service, version, method, parameter, request, getCookiesFromParameter(context), getHttpCookies(cookies));
     }
 
 
@@ -50,7 +52,7 @@ public class PostUtil {
                                               String parameter,
                                               FullHttpRequest req,
                                               Map<String, String> cookies,
-                                              Set<Cookie> httpCookies) {
+                                              Map<String, String> httpCookies) {
 
         InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies, httpCookies);
 
@@ -113,7 +115,7 @@ public class PostUtil {
                                                          String method,
                                                          FullHttpRequest req,
                                                          Map<String, String> cookies,
-                                                         Set<Cookie> httpCookies) {
+                                                         Map<String, String> httpCookies) {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.serviceName(service);
         invocationCtx.versionName(version);
@@ -134,12 +136,8 @@ public class PostUtil {
             invocationCtx.cookies(cookies);
         }
         //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
-        if (httpCookies != null && httpCookies.size() > 0) {
-            httpCookies.forEach(cookie -> {
-                if (cookie.value().startsWith(Constants.COOKIES_PREFIX)) {
-                    invocationCtx.setCookie(cookie.name(), cookie.value());
-                }
-            });
+        if (!httpCookies.isEmpty()) {
+            invocationCtx.cookies(httpCookies);
         }
 
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
