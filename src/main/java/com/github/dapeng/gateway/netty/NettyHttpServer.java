@@ -90,8 +90,7 @@ public class NettyHttpServer {
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, Boolean.TRUE)
                     .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-//                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-                    .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
+                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
 
             ChannelFuture future = bootstrap.bind(port).sync();
