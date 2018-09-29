@@ -98,7 +98,7 @@ public class InvokeUtil {
         cookies.forEach(cookie -> {
             String key = cookie.name();
             if (key.startsWith(Constants.COOKIES_PREFIX)) {
-                cookieMap.put(key.substring(key.indexOf("_")), cookie.value());
+                cookieMap.put(key.substring(key.indexOf("_") + 1), cookie.value());
             }
         });
         return cookieMap;
