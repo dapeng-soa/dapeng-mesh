@@ -5,11 +5,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author with struy.
@@ -17,6 +22,8 @@ import java.util.Set;
  * email :yq1724555319@gmail.com
  */
 public class InvokeUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
+
     /**
      * 获取用户真实IP地址，不使用request.getRemoteAddr();的原因是有可能用户使用了代理软件方式避免真实IP地址,
      * <p>
@@ -77,10 +84,16 @@ public class InvokeUtil {
      * 获取 Http 的 Cookies 值
      */
     public static Map<String, String> getHttpCookies(Set<Cookie> cookies) {
+
+
         Map<String, String> cookieMap = new HashMap<>();
         if (cookies == null || cookies.size() == 0) {
             return cookieMap;
         }
+        StringBuilder builder = new StringBuilder();
+        cookies.forEach(cookie -> builder.append("cookie-> ").append(cookie.name()).append(":").append(cookie.value()));
+        LOGGER.info("httpCookies: {}", builder.toString());
+
         //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
         cookies.forEach(cookie -> {
             String key = cookie.name();
