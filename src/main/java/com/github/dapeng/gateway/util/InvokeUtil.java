@@ -4,10 +4,12 @@ import com.github.dapeng.gateway.netty.request.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.cookie.Cookie;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author with struy.
@@ -50,12 +52,34 @@ public class InvokeUtil {
         return !ip.contains(",") ? ip : ip.split(",")[0];
     }
 
-
+    /**
+     * <p>
+     * 1.处理http 传递过来的 也没 cookie 值
+     * 2.处理 url 后缀携带的 cookie 参数
+     * 如果两个部分都有相同的key。优先级, url 值高于 http cookie 值
+     * </p>
+     *
+     * @param context request 上下文
+     */
     public static Map<String, String> getCookiesFromParameter(RequestContext context) {
         Map<String, String> cookies = new HashMap<>(16);
         if (context == null) {
             return cookies;
         }
+
+        //1. process http Cookies
+        Set<Cookie> httpCookies = context.cookies();
+        if (httpCookies != null && httpCookies.size() > 0) {
+            //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
+            httpCookies.forEach(httpCookie -> {
+                String key = httpCookie.name();
+                if (key.startsWith(Constants.COOKIES_PREFIX)) {
+                    cookies.put(key.substring(Constants.COOKIES_PREFIX.length()), httpCookie.value());
+                }
+            });
+        }
+
+        // process url cookies
         String cookieStoreId = context.arguments().get("cookie_storeId");
         if (cookieStoreId != null) {
             cookies.put("storeId", cookieStoreId);
@@ -68,6 +92,7 @@ public class InvokeUtil {
         if (cookieOperatorId != null) {
             cookies.put("operatorId", cookieOperatorId);
         }
+
         return cookies;
     }
 }

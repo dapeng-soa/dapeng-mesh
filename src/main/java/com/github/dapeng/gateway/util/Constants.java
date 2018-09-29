@@ -27,4 +27,7 @@ public class Constants {
     public static final String ADMIN_METHOD_NAME = "checkGateWayAuth";
 
 
+    public static final String COOKIES_PREFIX = "cookie_";
+
+
 }

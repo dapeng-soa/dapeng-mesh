@@ -4,12 +4,15 @@ import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.gateway.util.Constants;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static io.netty.handler.codec.http.HttpHeaderNames.COOKIE;
 
 /**
  * @author maple 2018.09.03 17:02  UrlMappingResolver
@@ -57,6 +60,8 @@ public class UrlMappingResolver {
      * @param context
      */
     private static void handlerMappingUrl(Matcher matcher, FullHttpRequest request, RequestContext context) {
+        getRequestCookies(request, context);
+
         String prefix = matcher.group(1);
         String serviceName = matcher.group(2);
         String versionName = matcher.group(3);
@@ -98,6 +103,8 @@ public class UrlMappingResolver {
      * etc. /api?cookie=234&user=maple
      */
     private static void handlerRequestParam(Matcher matcher, FullHttpRequest request, RequestContext context) {
+        getRequestCookies(request, context);
+
         String prefix = matcher.group(1);
         String apiKey = matcher.group(2);
 
@@ -123,6 +130,7 @@ public class UrlMappingResolver {
 
         RequestParser.fastParse(request, context);
     }
+
     /**
      * 解析url后携带参数,封装为 Map
      */
@@ -174,6 +182,19 @@ public class UrlMappingResolver {
             logger.error(e.getMessage(), e);
             return null;
 
+        }
+    }
+
+    /**
+     * Get Cookies from client
+     *
+     * @param request FullHttpRequest #netty
+     * @param context RequestContext
+     */
+    private static void getRequestCookies(FullHttpRequest request, RequestContext context) {
+        String value = request.headers().get(COOKIE);
+        if (value != null) {
+            context.cookies(ServerCookieDecoder.STRICT.decode(value));
         }
     }
 
