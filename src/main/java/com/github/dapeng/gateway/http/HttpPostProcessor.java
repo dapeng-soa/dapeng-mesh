@@ -28,7 +28,6 @@ public class HttpPostProcessor {
      * @param ctx     netty ctx
      */
     public void handlerPostRequest(RequestContext context, ChannelHandlerContext ctx) {
-
         if (context.isLegal()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Http:{}, 请求参数: {} ", context.requestUrl(), context.argumentToString());
@@ -36,12 +35,11 @@ public class HttpPostProcessor {
             // fill invocationContext
             fillInvocationProxy(context, ctx);
 
-            String parameter = context.parameter().get();
-            //todo 修改传入参数 ...
             CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(context);
 
             long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
+                logger.info("become to here jsonResponse.whenComplete");
                 if (ex != null) {
                     String resp;
                     if (ex instanceof SoaException) {
@@ -68,6 +66,7 @@ public class HttpPostProcessor {
                     HttpProcessorUtils.sendHttpResponse(ctx, response, context.request(), HttpResponseStatus.OK);
                 }
             });
+
         } else {
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IllegalRequest), context.request(), HttpResponseStatus.OK);
         }

@@ -143,6 +143,11 @@ public class PostUtil {
         }
 
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
+        StringBuilder sb = new StringBuilder();
+        invocationCtx.cookies().forEach((k, v) -> {
+            sb.append(k).append(":").append(v).append(" ");
+        });
+        LOGGER.info(sb.toString());
         return invocationCtx;
     }
 
