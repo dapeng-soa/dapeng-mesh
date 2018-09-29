@@ -9,6 +9,7 @@ import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -89,7 +90,8 @@ public class NettyHttpServer {
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, Boolean.TRUE)
                     .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+//                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+                    .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
 
 
             ChannelFuture future = bootstrap.bind(port).sync();

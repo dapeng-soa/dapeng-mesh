@@ -22,9 +22,27 @@
         </encoder>
     </appender>
 
+    <appender name="REPORT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/detail-health-report.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss SSS} %t %p [%X{sessionTid}] - %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="com.github.dapeng.gateway.check" level="INFO" additivity="false">
+        <appender-ref ref="REPORT"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
     <root level="INFO">
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="DETAILFILE"/>
+        <appender-ref ref="REPORT"/>
     </root>
     <jmxConfigurator/>
 </configuration>
