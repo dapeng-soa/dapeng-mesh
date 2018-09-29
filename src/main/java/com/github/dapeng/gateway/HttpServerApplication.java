@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway;
 
+import com.github.dapeng.gateway.check.DirectMemoryReporter;
 import com.github.dapeng.gateway.config.ApiGateWayConfig;
 import com.github.dapeng.gateway.netty.NettyHttpServer;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class HttpServerApplication {
         NettyHttpServer server = new NettyHttpServer(9000);
         logLogBanner();
         server.registerShutdownHook();
+        DirectMemoryReporter.getIntance().startReport();
         server.start();
     }
 
