@@ -24,8 +24,8 @@
 
     <logger name="druid.sql" level="OFF"/>
 
-    <root level="INFO">
-        <!--<appender-ref ref="STDOUT"/>-->
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="DETAILFILE"/>
     </root>
     <jmxConfigurator/>
