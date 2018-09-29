@@ -49,12 +49,12 @@ public class DirectMemoryReporter {
     }
 
     public void startReport() {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::doReport, 0, 5, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::doReport, 0, 3, TimeUnit.SECONDS);
     }
 
     private void doReport() {
-        int memoryInkb = (int) (directMemory.get() / _1K);
-//        int memoryInkb = (int) (directMemory.get());
+//        int memoryInkb = (int) (directMemory.get() / _1K);
+        int memoryInkb = (int) (directMemory.get());
         LOGGER.info("{}: {} k", BUSINESS_KEY, memoryInkb);
     }
 }

@@ -36,11 +36,13 @@
 
     <logger name="com.github.dapeng.gateway.check" level="INFO" additivity="false">
         <appender-ref ref="REPORT"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
 
     <root level="INFO">
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="DETAILFILE"/>
+        <appender-ref ref="REPORT"/>
     </root>
     <jmxConfigurator/>
 </configuration>
