@@ -16,7 +16,7 @@ public class SysEnvUtil {
     /**
      * 默认开启open接口鉴权
      */
-    public static final String OPEN_AUTH_ENABLE = get(KEY_OPEN_AUTH_ENABLE, "false");
+    public static final String OPEN_AUTH_ENABLE = get(KEY_OPEN_AUTH_ENABLE, "true");
 
 
     private static String get(String key, String defaultValue) {
