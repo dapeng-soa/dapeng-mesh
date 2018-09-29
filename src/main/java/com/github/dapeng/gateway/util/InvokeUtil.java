@@ -59,7 +59,12 @@ public class InvokeUtil {
         return !ip.contains(",") ? ip : ip.split(",")[0];
     }
 
-
+    /**
+     * 处理 url 后缀携带的 cookie 参数
+     * 处理http 传递过来的 也没 cookie 值
+     *
+     * @param context request 上下文
+     */
     public static Map<String, String> getCookiesFromParameter(RequestContext context) {
         Map<String, String> cookies = new HashMap<>(16);
         if (context == null) {
@@ -76,6 +81,18 @@ public class InvokeUtil {
         String cookieOperatorId = context.arguments().get("cookie_operatorId");
         if (cookieOperatorId != null) {
             cookies.put("operatorId", cookieOperatorId);
+        }
+
+        //process http Cookies
+        Set<Cookie> httpCookies = context.cookies();
+        if (httpCookies != null && httpCookies.size() > 0) {
+            //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
+            httpCookies.forEach(httpCookie -> {
+                String key = httpCookie.name();
+                if (key.startsWith(Constants.COOKIES_PREFIX)) {
+                    cookies.put(key.substring(Constants.COOKIES_PREFIX.length()), httpCookie.value());
+                }
+            });
         }
         return cookies;
     }

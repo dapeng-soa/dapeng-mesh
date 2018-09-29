@@ -42,7 +42,7 @@ public class PostUtil {
         String method = context.method().get();
         FullHttpRequest request = context.request();
         Set<Cookie> cookies = context.cookies();
-        return doPostAsync(service, version, method, parameter, request, getCookiesFromParameter(context), getHttpCookies(cookies));
+        return doPostAsync(service, version, method, parameter, request, getCookiesFromParameter(context));
     }
 
 
@@ -51,10 +51,9 @@ public class PostUtil {
                                               String method,
                                               String parameter,
                                               FullHttpRequest req,
-                                              Map<String, String> cookies,
-                                              Map<String, String> httpCookies) {
+                                              Map<String, String> cookies) {
 
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies, httpCookies);
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
 
         OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
 
@@ -90,7 +89,7 @@ public class PostUtil {
                                   String parameter,
                                   FullHttpRequest req,
                                   Map<String, String> cookies) throws Exception {
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies, null);
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
 
         OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
 
@@ -114,8 +113,7 @@ public class PostUtil {
                                                          String version,
                                                          String method,
                                                          FullHttpRequest req,
-                                                         Map<String, String> cookies,
-                                                         Map<String, String> httpCookies) {
+                                                         Map<String, String> cookies) {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.serviceName(service);
         invocationCtx.versionName(version);
@@ -134,10 +132,6 @@ public class PostUtil {
 
         if (!cookies.isEmpty()) {
             invocationCtx.cookies(cookies);
-        }
-        //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
-        if (!httpCookies.isEmpty()) {
-            invocationCtx.cookies(httpCookies);
         }
 
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
