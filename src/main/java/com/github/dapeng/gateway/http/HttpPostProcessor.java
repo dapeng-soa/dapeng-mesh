@@ -39,7 +39,6 @@ public class HttpPostProcessor {
 
             long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
-                logger.info("become to here jsonResponse.whenComplete");
                 if (ex != null) {
                     String resp;
                     if (ex instanceof SoaException) {

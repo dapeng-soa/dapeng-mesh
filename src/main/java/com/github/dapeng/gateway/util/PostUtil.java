@@ -133,13 +133,7 @@ public class PostUtil {
         if (!cookies.isEmpty()) {
             invocationCtx.cookies(cookies);
         }
-
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
-        StringBuilder sb = new StringBuilder();
-        invocationCtx.cookies().forEach((k, v) -> {
-            sb.append(k).append(":").append(v).append(" ");
-        });
-        LOGGER.info(sb.toString());
         return invocationCtx;
     }
 
