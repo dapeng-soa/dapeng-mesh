@@ -2,10 +2,9 @@ package com.github.dapeng.gateway.netty.request;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.cookie.Cookie;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +77,11 @@ public class RequestContext {
      * arguments map
      */
     private Map<String, String> arguments = new HashMap<>();
+
+    /**
+     * cookies map
+     */
+    private Set<Cookie> cookies;
 
 
     public FullHttpRequest request() {
@@ -199,6 +203,14 @@ public class RequestContext {
 
     public void arguments(Map<String, String> arguments) {
         this.arguments.putAll(arguments);
+    }
+
+    public Set<Cookie> cookies() {
+        return cookies;
+    }
+
+    public void cookies(Set<Cookie> cookies) {
+        this.cookies = cookies;
     }
 
     public String argumentToString() {

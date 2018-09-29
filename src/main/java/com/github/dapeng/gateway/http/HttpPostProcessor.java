@@ -38,7 +38,8 @@ public class HttpPostProcessor {
 
             String parameter = context.parameter().get();
             //todo 修改传入参数 ...
-            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(context.service().get(), context.version().get(), context.method().get(), parameter, context.request(), InvokeUtil.getCookiesFromParameter(context));
+            CompletableFuture<String> jsonResponse = (CompletableFuture<String>) PostUtil.postAsync(context);
+
             long beginTime = System.currentTimeMillis();
             jsonResponse.whenComplete((result, ex) -> {
                 if (ex != null) {

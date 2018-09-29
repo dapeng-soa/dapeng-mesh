@@ -9,15 +9,18 @@ import com.github.dapeng.core.enums.CodecProtocol;
 import com.github.dapeng.core.helper.DapengUtil;
 import com.github.dapeng.core.helper.IPUtils;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
+import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.json.OptimizedMetadata;
 import com.github.dapeng.openapi.cache.ServiceCache;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.cookie.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -30,20 +33,26 @@ import java.util.concurrent.Future;
 public class PostUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
 
-
-    public static Future<String> postAsync(String service, String version, String method, String parameter, FullHttpRequest req, Map<String, String> cookies) {
-        return postAsync(service, version, method, parameter, req, cookies, true);
+    public static Future<String> postAsync(RequestContext context) {
+        String parameter = context.parameter().get();
+        String service = context.service().get();
+        String version = context.version().get();
+        String method = context.method().get();
+        FullHttpRequest request = context.request();
+        Set<Cookie> cookies = context.cookies();
+        return doPostAsync(service, version, method, parameter, request, InvokeUtil.getCookiesFromParameter(context), cookies);
     }
 
 
-    private static Future<String> postAsync(String service,
-                                            String version,
-                                            String method,
-                                            String parameter,
-                                            FullHttpRequest req,
-                                            Map<String, String> cookies,
-                                            boolean clearInvocationContext) {
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
+    private static Future<String> doPostAsync(String service,
+                                              String version,
+                                              String method,
+                                              String parameter,
+                                              FullHttpRequest req,
+                                              Map<String, String> cookies,
+                                              Set<Cookie> httpCookies) {
+
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies, httpCookies);
 
         OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
 
@@ -64,9 +73,7 @@ public class PostUtil {
             LOGGER.error(e.getMessage(), e);
             return CompletableFuture.completedFuture(String.format("{\"responseCode\":\"%s\", \"responseMsg\":\"%s\", \"success\":\"%s\", \"status\":0}", "9999", "系统繁忙，请稍后再试[9999]！", "{}"));
         } finally {
-            if (clearInvocationContext) {
-                InvocationContextImpl.Factory.removeCurrentInstance();
-            }
+            InvocationContextImpl.Factory.removeCurrentInstance();
         }
     }
 
@@ -81,7 +88,7 @@ public class PostUtil {
                                   String parameter,
                                   FullHttpRequest req,
                                   Map<String, String> cookies) throws Exception {
-        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies);
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) createInvocationCtx(service, version, method, req, cookies, null);
 
         OptimizedMetadata.OptimizedService bizService = ServiceCache.getService(service, version);
 
@@ -101,7 +108,12 @@ public class PostUtil {
         }
     }
 
-    private static InvocationContext createInvocationCtx(String service, String version, String method, FullHttpRequest req, Map<String, String> cookies) {
+    private static InvocationContext createInvocationCtx(String service,
+                                                         String version,
+                                                         String method,
+                                                         FullHttpRequest req,
+                                                         Map<String, String> cookies,
+                                                         Set<Cookie> httpCookies) {
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
         invocationCtx.serviceName(service);
         invocationCtx.versionName(version);
@@ -121,9 +133,16 @@ public class PostUtil {
         if (!cookies.isEmpty()) {
             invocationCtx.cookies(cookies);
         }
+        //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
+        if (httpCookies != null && httpCookies.size() > 0) {
+            httpCookies.forEach(cookie -> {
+                if (cookie.value().startsWith(Constants.COOKIES_PREFIX)) {
+                    invocationCtx.setCookie(cookie.name(), cookie.value());
+                }
+            });
+        }
 
         invocationCtx.codecProtocol(CodecProtocol.CompressedBinary);
-//        invocationCtx.timeout(10000);
         return invocationCtx;
     }
 
