@@ -20,7 +20,7 @@ public class HttpServerApplication {
         NettyHttpServer server = new NettyHttpServer(9000);
         logLogBanner();
         server.registerShutdownHook();
-        DirectMemoryReporter.getIntance().startReport();
+        DirectMemoryReporter.getInstance().startReport();
         server.start();
     }
 

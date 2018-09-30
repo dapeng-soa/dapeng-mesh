@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DirectMemoryReporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(DirectMemoryReporter.class);
     private static final int _1K = 1024;
-    private static final String BUSINESS_KEY = "netty_direct_mempry";
+    private static final String BUSINESS_KEY = "netty_direct_memory";
 
     private AtomicLong directMemory;
 
@@ -26,7 +26,7 @@ public class DirectMemoryReporter {
 
     private static DirectMemoryReporter directMemoryReporter;
 
-    public static DirectMemoryReporter getIntance() {
+    public static DirectMemoryReporter getInstance() {
         if (directMemoryReporter == null) {
             synchronized (DirectMemoryReporter.class) {
                 if (directMemoryReporter == null) {
