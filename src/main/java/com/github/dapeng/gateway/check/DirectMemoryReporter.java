@@ -53,8 +53,8 @@ public class DirectMemoryReporter {
     }
 
     private void doReport() {
-        int memoryInkb = (int) (directMemory.get() / _1K);
-//        int memoryInkb = (int) (directMemory.get());
+//        int memoryInkb = (int) (directMemory.get() / _1K);
+        int memoryInkb = (int) (directMemory.get());
         LOGGER.info("{}: {} k", BUSINESS_KEY, memoryInkb);
     }
 }
