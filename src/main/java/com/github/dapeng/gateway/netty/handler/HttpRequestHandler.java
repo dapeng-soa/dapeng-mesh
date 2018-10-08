@@ -15,12 +15,14 @@ import org.slf4j.LoggerFactory;
  * @author maple 2018.08.23 上午10:01
  */
 @ChannelHandler.Sharable
-public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+//public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(HttpRequestHandler.class);
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        FullHttpRequest request = (FullHttpRequest) msg;
 
         RequestContext context = new RequestContext();
         context.request(request);
