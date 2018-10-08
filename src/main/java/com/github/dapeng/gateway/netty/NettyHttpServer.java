@@ -104,6 +104,7 @@ public class NettyHttpServer {
         }
     }
 
+    @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
     public void registerShutdownHook() {
         if (this.shutdownHook == null) {
             // No shutdown hook registered yet.
