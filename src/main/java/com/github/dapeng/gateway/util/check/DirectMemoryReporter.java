@@ -1,4 +1,4 @@
-package com.github.dapeng.gateway.check;
+package com.github.dapeng.gateway.util.check;
 
 import io.netty.util.internal.PlatformDependent;
 import org.slf4j.Logger;
@@ -19,6 +19,12 @@ public class DirectMemoryReporter {
     private static final String BUSINESS_KEY = "netty_direct_memory";
 
     private AtomicLong directMemory;
+
+    private DataUnit dataUnit;
+
+    public void setDataUnit(DataUnit dataUnit) {
+        this.dataUnit = dataUnit;
+    }
 
     private DirectMemoryReporter() {
         init();
@@ -53,8 +59,17 @@ public class DirectMemoryReporter {
     }
 
     private void doReport() {
-//        int memoryInkb = (int) (directMemory.get() / _1K);
-        int memoryInkb = (int) (directMemory.get());
-        LOGGER.info("{}: {} k", BUSINESS_KEY, memoryInkb);
+        if (dataUnit == DataUnit.BYTE) {
+            int memoryInkb = (int) (directMemory.get());
+            LOGGER.info("{}: {} byte", BUSINESS_KEY, memoryInkb);
+        } else {
+            int memoryInkb = (int) (directMemory.get() / _1K);
+            LOGGER.info("{}: {} kb", BUSINESS_KEY, memoryInkb);
+        }
+    }
+
+    public enum DataUnit {
+        BYTE,
+        KILO_BYTE
     }
 }

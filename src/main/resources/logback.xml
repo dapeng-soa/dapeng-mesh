@@ -34,7 +34,7 @@
     </appender>
 
 
-    <logger name="com.github.dapeng.gateway.check" level="INFO" additivity="false">
+    <logger name="com.github.dapeng.gateway.util.check" level="INFO" additivity="false">
         <appender-ref ref="REPORT"/>
         <appender-ref ref="STDOUT"/>
     </logger>

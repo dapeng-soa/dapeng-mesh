@@ -1,8 +1,9 @@
 package com.github.dapeng.gateway;
 
-import com.github.dapeng.gateway.check.DirectMemoryReporter;
+import com.github.dapeng.gateway.util.check.DirectMemoryReporter;
 import com.github.dapeng.gateway.config.ApiGateWayConfig;
 import com.github.dapeng.gateway.netty.NettyHttpServer;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +19,16 @@ public class HttpServerApplication {
     public static void main(String[] args) throws Exception {
         new ApiGateWayConfig().afterPropertiesSet();
         NettyHttpServer server = new NettyHttpServer(9000);
+        //测试时使用非池化
+        server.setAllocator(UnpooledByteBufAllocator.DEFAULT);
         logLogBanner();
         server.registerShutdownHook();
-        DirectMemoryReporter.getInstance().startReport();
+        DirectMemoryReporter reporter = DirectMemoryReporter.getInstance();
+        //以 byte 进行 report
+        reporter.setDataUnit(DirectMemoryReporter.DataUnit.BYTE);
+        reporter.startReport();
+        //是否开启接口鉴权
+        System.setProperty("soa.open.auth.enable", "false");
         server.start();
     }
 

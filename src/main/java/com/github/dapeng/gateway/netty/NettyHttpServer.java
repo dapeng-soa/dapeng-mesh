@@ -8,6 +8,7 @@ import com.github.dapeng.gateway.netty.handler.ServerProcessHandler;
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.SysEnvUtil;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.*;
@@ -45,6 +46,11 @@ public class NettyHttpServer {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
+    private ByteBufAllocator allocator;
+
+    public void setAllocator(ByteBufAllocator allocator) {
+        this.allocator = allocator;
+    }
 
     public NettyHttpServer(int port) {
         this.port = port > 0 ? port : 0;
@@ -90,8 +96,7 @@ public class NettyHttpServer {
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, Boolean.TRUE)
                     .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-//                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-                    .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
+                    .childOption(ChannelOption.ALLOCATOR, allocator == null ? PooledByteBufAllocator.DEFAULT : allocator);
 
 
             ChannelFuture future = bootstrap.bind(port).sync();
