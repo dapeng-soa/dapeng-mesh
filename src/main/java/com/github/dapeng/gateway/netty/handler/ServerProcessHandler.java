@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.netty.handler;
 
+import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
 import com.github.dapeng.gateway.http.HttpPostProcessor;
 import com.github.dapeng.gateway.http.HttpResponseEntity;
@@ -30,13 +31,16 @@ public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestCon
         }
         try {
             dispatchRequest(context, ctx);
+        } catch (SoaException e) {
+            logger.error("网关请求SoaException：" + e.getMessage(), e);
+            HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(e), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             logger.error("网关处理请求失败: " + e.getMessage(), e);
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.ProcessReqFailed), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void dispatchRequest(RequestContext context, ChannelHandlerContext ctx) {
+    private void dispatchRequest(RequestContext context, ChannelHandlerContext ctx) throws SoaException {
 
         HttpMethod httpMethod = context.httpMethod();
 

@@ -27,7 +27,7 @@ public class HttpPostProcessor {
      * @param context 封装的每一次请求上下文
      * @param ctx     netty ctx
      */
-    public void handlerPostRequest(RequestContext context, ChannelHandlerContext ctx) {
+    public void handlerPostRequest(RequestContext context, ChannelHandlerContext ctx) throws SoaException {
         if (context.isLegal()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Http:{}, 请求参数: {} ", context.requestUrl(), context.argumentToString());

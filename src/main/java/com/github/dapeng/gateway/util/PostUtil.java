@@ -36,7 +36,7 @@ import static com.github.dapeng.gateway.util.InvokeUtil.*;
 public class PostUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
 
-    public static Future<String> postAsync(RequestContext context) {
+    public static Future<String> postAsync(RequestContext context) throws SoaException {
         preCheck(context);
 
         String parameter = context.parameter().get();
@@ -170,7 +170,7 @@ public class PostUtil {
     }
 
 
-    private static void preCheck(RequestContext context) {
+    private static void preCheck(RequestContext context) throws SoaException {
         // parameter 会空
         asserts(context.parameter(), "parameter");
         asserts(context.service(), "service");
@@ -178,9 +178,9 @@ public class PostUtil {
         asserts(context.method(), "method");
     }
 
-    private static <T> void asserts(Optional<T> value, String message) {
+    private static <T> void asserts(Optional<T> value, String message) throws SoaException {
         if (!value.isPresent()) {
-            throw new IllegalArgumentException("请求参数 (" + message + ") 不能为空!");
+            throw new SoaException(DapengMeshCode.ParameterError.getCode(), "请求参数 (" + message + ") 不能为空!");
         }
     }
 }
