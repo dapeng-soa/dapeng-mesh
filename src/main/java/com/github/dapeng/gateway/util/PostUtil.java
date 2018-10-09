@@ -36,7 +36,8 @@ public class PostUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
 
     public static Future<String> postAsync(RequestContext context) {
-        String parameter = context.parameter().get();
+        // parameter 会空
+        String parameter = context.parameter().orElse("{}");
         String service = context.service().get();
         String version = context.version().get();
         String method = context.method().get();

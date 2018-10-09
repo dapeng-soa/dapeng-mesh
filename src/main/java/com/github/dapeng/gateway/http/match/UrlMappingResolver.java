@@ -149,10 +149,10 @@ public class UrlMappingResolver {
                     String[] arg = argument.split(WILDCARD_CHARS[3]);
                     holder.setArgument(arg[0], arg[1]);
                 });
-                holder.setLastPath(parameter.substring(0, pos));
+                holder.setLastPath(discardSuffuxIfNessary(parameter.substring(0, pos)));
                 return holder;
             }
-            return UrlArgumentHolder.onlyPathCreator(parameter);
+            return UrlArgumentHolder.onlyPathCreator(discardSuffuxIfNessary(parameter));
         } catch (RuntimeException e) {
             logger.error("解析url参数错误, exception: {}, cause:" + e.getMessage(), e.getClass().getName());
             return UrlArgumentHolder.onlyPathCreator(parameter);
@@ -196,6 +196,19 @@ public class UrlMappingResolver {
         if (value != null) {
             context.cookies(ServerCookieDecoder.STRICT.decode(value));
         }
+    }
+
+    /**
+     * 去除 url 带的后缀
+     *
+     * @param path
+     * @return
+     */
+    private static String discardSuffuxIfNessary(String path) {
+        if (path.endsWith(".html") || path.endsWith(".htm")) {
+            return path.substring(0, path.lastIndexOf("."));
+        }
+        return path;
     }
 
 }
