@@ -9,3 +9,19 @@
 
 
 基于`netty`的异步网关和`service-mesh`方案
+
+### dapeng-mesh 开启或者关闭鉴权的环境变量
+> 默认是开启鉴权，可以使用如下环境变量关闭 `API` 接口鉴权。
+
+```
+soa.open.auth.enable=false
+
+//env
+soa_open_auth_enable=false
+```
+### 选择 zookeeper 连接
+
+```
+soa.zookeeper.host=192.168.10.12:2181
+
+```
