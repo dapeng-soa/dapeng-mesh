@@ -172,15 +172,15 @@ public class PostUtil {
 
     private static void preCheck(RequestContext context) throws SoaException {
         // parameter 会空
-        asserts(context.parameter(), "parameter");
-        asserts(context.service(), "service");
-        asserts(context.version(), "version");
-        asserts(context.method(), "method");
+        asserts(context.parameter(), context, "parameter");
+        asserts(context.service(), context, "service");
+        asserts(context.version(), context, "version");
+        asserts(context.method(), context, "method");
     }
 
-    private static <T> void asserts(Optional<T> value, String message) throws SoaException {
+    private static <T> void asserts(Optional<T> value, RequestContext context, String message) throws SoaException {
         if (!value.isPresent()) {
-            throw new SoaException(DapengMeshCode.ParameterError.getCode(), "请求参数 (" + message + ") 不能为空!");
+            throw new SoaException(DapengMeshCode.ParameterError.getCode(), "请求[" + context.requestUrl() + "],参数[" + message + "] 不能为空");
         }
     }
 }
