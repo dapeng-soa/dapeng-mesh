@@ -67,13 +67,17 @@ public class UrlMappingResolver {
         String versionName = matcher.group(3);
         String methodName = matcher.group(4);
         String apiKey = matcher.group(5);
-
+        //apiKey为null，也要解析 parameter
         if (apiKey == null) {
             UrlArgumentHolder holder = doResolveArgument(methodName);
             context.urlPrefix(prefix);
             context.service(serviceName);
             context.version(versionName);
             context.method(holder.getLastPath());
+
+            String parameter = RequestParser.fastParseParam(request, "parameter");
+
+            context.parameter(parameter);
 
             context.arguments(holder.getArgumentMap());
             return;
