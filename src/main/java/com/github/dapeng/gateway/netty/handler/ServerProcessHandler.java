@@ -32,7 +32,7 @@ public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestCon
         try {
             dispatchRequest(context, ctx);
         } catch (SoaException e) {
-            logger.error("网关请求SoaException：" + e.getMessage(), e);
+            logger.error("网关请求SoaException：" + e.getMessage());
             HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(e), null, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             logger.error("网关处理请求失败: " + e.getMessage(), e);
