@@ -25,6 +25,9 @@ public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestCon
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestContext context) throws Exception {
+        if (logger.isDebugEnabled()) {
+            logger.debug("current request context: {}", context.toString());
+        }
         try {
             dispatchRequest(context, ctx);
         } catch (Exception e) {

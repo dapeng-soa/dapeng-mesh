@@ -218,4 +218,27 @@ public class RequestContext {
                 .map(argument -> "KV:[" + argument.getKey() + " -> " + argument.getValue() + "]")
                 .collect(Collectors.joining(","));
     }
+
+    @Override
+    public String toString() {
+        return "RequestContext{" +
+                "request=" + request +
+                ", httpMethod=" + httpMethod +
+                ", requestUrl='" + requestUrl + '\'' +
+                ", urlPrefix='" + urlPrefix + '\'' +
+                ", isLegal=" + isLegal +
+                ", cause=" + cause +
+                ", service=" + service +
+                ", version=" + version +
+                ", method=" + method +
+                ", apiKey=" + apiKey +
+                ", timestamp=" + timestamp +
+                ", secret=" + secret +
+                ", secret2=" + secret2 +
+                ", parameter=" + parameter +
+                ", arguments=" + arguments +
+                ", cookies=" + cookies +
+                "argument=" + argumentToString() +
+                '}';
+    }
 }

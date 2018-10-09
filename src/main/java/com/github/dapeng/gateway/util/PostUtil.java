@@ -41,7 +41,6 @@ public class PostUtil {
         String version = context.version().get();
         String method = context.method().get();
         FullHttpRequest request = context.request();
-        Set<Cookie> cookies = context.cookies();
         return doPostAsync(service, version, method, parameter, request, getCookiesFromParameter(context));
     }
 
