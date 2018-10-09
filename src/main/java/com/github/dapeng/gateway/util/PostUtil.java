@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -36,8 +37,9 @@ public class PostUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(com.github.dapeng.openapi.utils.PostUtil.class);
 
     public static Future<String> postAsync(RequestContext context) {
-        // parameter 会空
-        String parameter = context.parameter().orElse("{}");
+        preCheck(context);
+
+        String parameter = context.parameter().get();
         String service = context.service().get();
         String version = context.version().get();
         String method = context.method().get();
@@ -168,5 +170,18 @@ public class PostUtil {
     }
 
 
+    private static void preCheck(RequestContext context) {
+        // parameter 会空
+        asserts(context.parameter(), "parameter");
+        asserts(context.service(), "service");
+        asserts(context.version(), "version");
+        asserts(context.method(), "method");
+    }
+
+    private static <T> void asserts(Optional<T> value, String message) {
+        if (!value.isPresent()) {
+            throw new IllegalArgumentException("请求参数 (" + message + ") 不能为空!");
+        }
+    }
 }
 
