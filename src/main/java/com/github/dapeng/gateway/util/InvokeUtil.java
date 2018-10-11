@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.Set;
  * email :yq1724555319@gmail.com
  */
 public class InvokeUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvokeUtil.class);
+
     /**
      * 获取用户真实IP地址，不使用request.getRemoteAddr();的原因是有可能用户使用了代理软件方式避免真实IP地址,
      * <p>
@@ -70,6 +74,9 @@ public class InvokeUtil {
         //1. process http Cookies
         Set<Cookie> httpCookies = context.cookies();
         if (httpCookies != null && httpCookies.size() > 0) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("current request {} ,cookies is {}", context.requestUrl(), httpCookies.toString());
+            }
             //设置通过 http 传入的 cookies ,需要前缀为 COOKIES_PREFIX
             httpCookies.forEach(httpCookie -> {
                 String key = httpCookie.name();
