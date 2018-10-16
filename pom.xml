@@ -104,6 +104,7 @@
 
 
     <build>
+        <finalName>dapeng-mesh-with-dependencies</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -140,7 +141,7 @@
                         <configuration>
                             <!-- copy child's output files into target/docker -->
                             <tasks>
-                                <copy file="${project.build.directory}/dapeng-mesh-${version}-jar-with-dependencies.jar"
+                                <copy file="${project.build.directory}/dapeng-mesh-with-dependencies.jar"
                                       todir="${basedir}/docker/apps">
                                 </copy>
                             </tasks>
@@ -170,7 +171,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.10</version>
                 <configuration>
-                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:2.0.5</imageName>
+                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:${version}</imageName>
                     <dockerDirectory>${basedir}/docker</dockerDirectory>
                 </configuration>
                 <executions>
