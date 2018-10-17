@@ -56,7 +56,7 @@ process_exit() {
 trap 'kill ${!};process_exit' SIGTERM
 
 # 程序启动
-nohup java -server $JVM_OPTS $SOA_BASE $DEBUG_OPTS $USER_OPTS  $E_JAVA_OPTS -jar $APP_DIR/dapeng-mesh-jar-with-dependencies.jar >> $LOG_DIR/console.log 2>&1 &
+nohup java -server $JVM_OPTS $SOA_BASE $DEBUG_OPTS $USER_OPTS  $E_JAVA_OPTS -jar $APP_DIR/dapeng-mesh-with-dependencies.jar >> $LOG_DIR/console.log 2>&1 &
 
 # 获取上一步程序启动的 PID
 pid="$!"
