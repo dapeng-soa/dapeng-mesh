@@ -6,4 +6,5 @@ logs/
 .DS_Store
 docker/apps
 src/main/.DS_Store
+docker/service-whitelist.xml
 
