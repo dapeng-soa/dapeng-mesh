@@ -10,7 +10,7 @@ ENV TZ CST-8
 
 WORKDIR /dapeng-mesh
 
-COPY ./apps/dapeng-mesh-with-dependencies.jar /dapeng-mesh/
+COPY ./apps/dapeng-mesh-jar-with-dependencies.jar /dapeng-mesh/
 COPY ./service-whitelist.xml /dapeng-mesh/
 
 

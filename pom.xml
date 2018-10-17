@@ -104,7 +104,6 @@
 
 
     <build>
-        <finalName>dapeng-mesh-with-dependencies</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -116,6 +115,7 @@
                             <mainClass>com.github.dapeng.gateway.HttpServerApplication</mainClass>
                         </manifest>
                     </archive>
+                    <finalName>dapeng-mesh</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -141,7 +141,7 @@
                         <configuration>
                             <!-- copy child's output files into target/docker -->
                             <tasks>
-                                <copy file="${project.build.directory}/dapeng-mesh-with-dependencies.jar"
+                                <copy file="${project.build.directory}/dapeng-mesh-jar-with-dependencies.jar"
                                       todir="${basedir}/docker/apps">
                                 </copy>
                             </tasks>
