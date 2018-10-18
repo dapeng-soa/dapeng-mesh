@@ -238,7 +238,7 @@ public class RequestContext {
                 ", parameter=" + parameter +
                 ", arguments=" + arguments +
                 ", cookies=" + cookies +
-                "argument=" + argumentToString() +
+                ", argument=" + argumentToString() +
                 '}';
     }
 }
