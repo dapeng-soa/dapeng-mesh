@@ -7,7 +7,7 @@
             <Pattern>%d{MM-dd HH:mm:ss SSS} %t %p - %m%n</Pattern>
         </layout>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>DEBUG</level>
         </filter>
     </appender>
 
@@ -23,6 +23,11 @@
     </appender>
 
     <root level="INFO">
+        <if condition='property("run_mode").equals("singleton")'>
+            <then>
+                <appender-ref ref="STDOUT"/>
+            </then>
+        </if>
         <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="DETAILFILE"/>
     </root>

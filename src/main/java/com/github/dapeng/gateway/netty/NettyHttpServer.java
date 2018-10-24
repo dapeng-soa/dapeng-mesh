@@ -114,7 +114,7 @@ public class NettyHttpServer {
                     logger.info("sleep 15s, wait nginx health check remove this gateway");
                     try {
                         TimeUnit.SECONDS.sleep(15);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     }
                     logger.info("ready to shutdown this gateway!");
                     if (bossGroup != null) {
