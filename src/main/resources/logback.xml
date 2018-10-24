@@ -23,7 +23,11 @@
     </appender>
 
     <root level="INFO">
-        <!--<appender-ref ref="STDOUT"/>-->
+        <if condition='property("run_mode").equals("singleton")'>
+            <then>
+                <appender-ref ref="STDOUT"/>
+            </then>
+        </if>
         <appender-ref ref="DETAILFILE"/>
     </root>
     <jmxConfigurator/>
