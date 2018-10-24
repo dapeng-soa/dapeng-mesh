@@ -41,7 +41,7 @@ public class HttpGetHeadProcessor {
                 }
                 break;
         }
-        logger.debug("not support url request, uri: {}", url);
+        logger.info("not support url request, uri: {}", url);
         return new HttpResponseEntity(HttpProcessorUtils.wrapErrorResponse(url, DapengMeshCode.RequestUrlNotSupport), HttpResponseStatus.OK);
     }
 

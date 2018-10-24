@@ -7,7 +7,7 @@
             <Pattern>%d{MM-dd HH:mm:ss SSS} %t %p - %m%n</Pattern>
         </layout>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>DEBUG</level>
         </filter>
     </appender>
 
