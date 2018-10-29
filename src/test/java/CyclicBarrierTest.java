@@ -1,4 +1,4 @@
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.*;
 
 /**
@@ -19,8 +19,7 @@ public class CyclicBarrierTest {
         public void run() {
             try {
                 System.out.println(name + " 第一步");
-                Random random = new Random();
-                int i = random.nextInt(10);
+                int i = ThreadLocalRandom.current().nextInt(10);
 
                 System.out.println(i);
                 TimeUnit.SECONDS.sleep(i);
