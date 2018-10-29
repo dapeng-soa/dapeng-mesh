@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <service-whitelist>
     <service>com.today.api.order.service.OrderService2</service>
+    <service>com.today.api.goods.service.AdminGoodsService</service>
     <service>com.today.api.dictionary.service.OpenDictionaryService</service>
     <service>com.today.soa.idgen.service.IDService</service>
     <service>com.today.api.stock.service.StockService</service>

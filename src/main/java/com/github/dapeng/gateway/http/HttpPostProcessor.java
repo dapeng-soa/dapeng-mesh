@@ -32,6 +32,12 @@ public class HttpPostProcessor {
             if (logger.isDebugEnabled()) {
                 logger.debug("Http:{}, 请求参数: {} ", context.requestUrl(), context.argumentToString());
             }
+
+            //判断是否是mockMode
+            if (context.isMockMode()) {
+                HttpProcessorUtils.sendHttpResponse(ctx, MockDataUtils.getJsonMockData(context), context.request(), HttpResponseStatus.OK);
+                return;
+            }
             // fill invocationContext
             fillInvocationProxy(context, ctx);
 

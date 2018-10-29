@@ -34,6 +34,11 @@ public class RequestContext {
     private boolean isLegal = true;
 
     /**
+     * 是否是mock模式
+     */
+    private boolean mockMode = false;
+
+    /**
      * 当前请求可能抛的异常及原因
      */
     private Optional<String> cause = Optional.empty();
@@ -123,6 +128,14 @@ public class RequestContext {
 
     public void isLegal(boolean legal) {
         isLegal = legal;
+    }
+
+    public boolean isMockMode() {
+        return mockMode;
+    }
+
+    public void setMockMode(boolean mockMode) {
+        this.mockMode = mockMode;
     }
 
     public Optional<String> cause() {
@@ -226,6 +239,7 @@ public class RequestContext {
                 ", httpMethod=" + httpMethod +
                 ", requestUrl='" + requestUrl + '\'' +
                 ", urlPrefix='" + urlPrefix + '\'' +
+                ", isMockMode='" + mockMode + '\'' +
                 ", isLegal=" + isLegal +
                 ", cause=" + cause +
                 ", service=" + service +

@@ -83,6 +83,8 @@ public final class RequestParser {
         String version = parameters.getOrDefault("version", defaultStr).get(0);
         String methodName = parameters.getOrDefault("methodName", defaultStr).get(0);
 
+        boolean mockMode = Boolean.parseBoolean(parameters.getOrDefault("mockMode", defaultStr).get(0));
+
         String parameter = parameters.getOrDefault("parameter", defaultStr).get(0);
 
         String timestamp = parameters.getOrDefault("timestamp", defaultStr).get(0);
@@ -94,6 +96,7 @@ public final class RequestParser {
         context.version(version);
         context.method(methodName);
         context.parameter(parameter);
+        context.setMockMode(mockMode);
 
         context.timestamp(timestamp);
         context.secret(secret);
