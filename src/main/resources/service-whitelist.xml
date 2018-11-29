@@ -23,4 +23,5 @@
     <service>com.today.api.category.service.AdminCategoryService</service>
     <service>com.today.api.purchase.service.PurchaseSupplierService</service>
     <service>com.today.api.verifyorder.service.OrderVerifyService</service>
+    <service>com.github.dapeng.hello.service.HelloService</service>
 </service-whitelist>
