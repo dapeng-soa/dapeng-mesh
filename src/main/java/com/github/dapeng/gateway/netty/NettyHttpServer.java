@@ -1,6 +1,7 @@
 package com.github.dapeng.gateway.netty;
 
 import com.github.dapeng.gateway.http.GetUrlController;
+import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import com.github.dapeng.gateway.http.MeshHealthStatus;
 import com.github.dapeng.gateway.netty.handler.AuthenticationHandler;
 import com.github.dapeng.gateway.netty.handler.HttpRequestHandler;
@@ -21,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+
+import static com.github.dapeng.core.helper.SoaSystemEnvProperties.SOA_SHUTDOWN_TIMEOUT;
 
 /**
  * @author maple NettyHttpServer
@@ -117,6 +120,8 @@ public class NettyHttpServer {
                     } catch (InterruptedException ignored) {
                     }
                     logger.info("ready to shutdown this gateway!");
+                    //重试，保证请求处理完成
+                    retryCompareCounter();
                     if (bossGroup != null) {
                         bossGroup.shutdownGracefully();
                     }
@@ -127,6 +132,37 @@ public class NettyHttpServer {
                 }
             }, "netty-server-shutdownHook-thread");
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
+    }
+
+    public void retryCompareCounter() {
+        if (logger.isDebugEnabled()) {
+            logger.debug(getClass().getSimpleName() + "Retry to ensure requests processing is complete");
+        }
+
+        logger.warn("尚余[" + HttpProcessorUtils.getRequestCounter().intValue() + "]个请求还未处理..."
+                + (HttpProcessorUtils.getRequestCounter().intValue() > 0 ? "现在最多等待[" + SOA_SHUTDOWN_TIMEOUT + "ms]" : ""));
+
+        long sleepTime = 2000;
+        long retry = SOA_SHUTDOWN_TIMEOUT / sleepTime;
+
+        do {
+            if (HttpProcessorUtils.getRequestCounter().intValue() <= 0) {
+                return;
+            } else {
+                try {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("requests haven't been processed  completely, sleep " + sleepTime + "ms");
+                    }
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        } while (--retry > 0);
+
+        if (HttpProcessorUtils.getRequestCounter().intValue() != 0) {
+            logger.warn(retry + "次等待共[" + SOA_SHUTDOWN_TIMEOUT + "ms]之后，尚余[" + HttpProcessorUtils.getRequestCounter().intValue() + "]个请求还未处理完，gateway即将关闭...");
         }
     }
 }

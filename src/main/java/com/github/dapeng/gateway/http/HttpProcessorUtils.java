@@ -11,12 +11,16 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author maple 2018.08.28 下午4:53
  */
 public class HttpProcessorUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpProcessorUtils.class);
 
+    //未完成请求计数
+    private static AtomicInteger requestCounter = new AtomicInteger(0);
 
     public static void sendHttpResponse(ChannelHandlerContext ctx, HttpResponseEntity entity, RequestContext context) {
         sendHttpResponse(ctx, entity.getContent(), context.request(), entity.getStatus());
@@ -52,6 +56,9 @@ public class HttpProcessorUtils {
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             }
         }
+
+        //请求返回，计数 -1
+        requestCounter.decrementAndGet();
     }
 
 
@@ -104,4 +111,9 @@ public class HttpProcessorUtils {
         logger.debug("mesh-log-response: url: {}, info: {}", url, msg);
         return msg.toString();
     }
+
+    public static AtomicInteger getRequestCounter() {
+        return requestCounter;
+    }
+
 }
