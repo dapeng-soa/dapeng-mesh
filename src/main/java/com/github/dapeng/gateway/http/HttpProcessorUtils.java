@@ -38,27 +38,29 @@ public class HttpProcessorUtils {
      * @link Unpooled.wrappedBuffer
      */
     public static void sendHttpResponse(ChannelHandlerContext ctx, String content, FullHttpRequest request, HttpResponseStatus status) {
-        ByteBuf wrapBuf = ctx.alloc().buffer(content.length());
-        wrapBuf.writeBytes(content.getBytes(CharsetUtil.UTF_8));
+        try {
+            ByteBuf wrapBuf = ctx.alloc().buffer(content.length());
+            wrapBuf.writeBytes(content.getBytes(CharsetUtil.UTF_8));
 
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, wrapBuf);
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-        response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, wrapBuf);
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+            response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
 
-        if (request == null) {
-            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            boolean isKeepAlive = HttpUtil.isKeepAlive(request);
-            if (isKeepAlive) {
-                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                ctx.writeAndFlush(response);
-            } else {
+            if (request == null) {
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+            } else {
+                boolean isKeepAlive = HttpUtil.isKeepAlive(request);
+                if (isKeepAlive) {
+                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+                    ctx.writeAndFlush(response);
+                } else {
+                    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                }
             }
+        } finally {
+            //请求返回，计数 -1
+            requestCounter.decrementAndGet();
         }
-
-        //请求返回，计数 -1
-        requestCounter.decrementAndGet();
     }
 
 

@@ -148,7 +148,7 @@ public class NettyHttpServer {
 
         do {
             if (HttpProcessorUtils.getRequestCounter().intValue() <= 0) {
-                return;
+                break;
             } else {
                 try {
                     if (logger.isDebugEnabled()) {
