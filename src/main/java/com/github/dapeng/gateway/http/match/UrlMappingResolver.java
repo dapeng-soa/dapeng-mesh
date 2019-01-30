@@ -31,6 +31,8 @@ public class UrlMappingResolver {
 
     private static final String DEFAULT_URL_PREFIX = "api";
 
+    private static final int ARGUMENT_SPLIT_LENGTH = 2;
+
 
     public static void handlerPostUrl(FullHttpRequest request, RequestContext context) {
         Matcher matcherFirst = POST_GATEWAY_PATTERN.matcher(request.uri());
@@ -84,9 +86,13 @@ public class UrlMappingResolver {
         }
         UrlArgumentHolder holder = doResolveArgument(apiKey);
 
-        String timestamp = RequestParser.fastParseParam(request, "timestamp");
-        String secret = RequestParser.fastParseParam(request, "secret");
-        String secret2 = RequestParser.fastParseParam(request, "secret2");
+        // queryString如果携带timestamp及secret/secret2，优先使用queryString携带的这几个参数
+        String defaultTimestamp = RequestParser.fastParseParam(request, "timestamp");
+        String timestamp = holder.getArgumentMap().getOrDefault("timestamp", defaultTimestamp);
+        String defaultSecret = RequestParser.fastParseParam(request, "secret");
+        String secret = holder.getArgumentMap().getOrDefault("secret", defaultSecret);
+        String defaultSecret2 = RequestParser.fastParseParam(request, "secret2");
+        String secret2 = holder.getArgumentMap().getOrDefault("secret2", defaultSecret2);
         String parameter = RequestParser.fastParseParam(request, "parameter");
 
         context.urlPrefix(prefix);
@@ -149,9 +155,15 @@ public class UrlMappingResolver {
                 }
 
                 UrlArgumentHolder holder = UrlArgumentHolder.nonPropertyCreator();
+                String defaultValue = "";
                 Arrays.stream(arguments.split(WILDCARD_CHARS[2])).forEach(argument -> {
                     String[] arg = argument.split(WILDCARD_CHARS[3]);
-                    holder.setArgument(arg[0], arg[1]);
+                    // 需要考虑'name='这类空参数
+                    if (arg.length == ARGUMENT_SPLIT_LENGTH) {
+                        holder.setArgument(arg[0], arg[1]);
+                    } else {
+                        holder.setArgument(arg[0], defaultValue);
+                    }
                 });
                 holder.setLastPath(discardSuffuxIfNessary(parameter.substring(0, pos)));
                 return holder;
