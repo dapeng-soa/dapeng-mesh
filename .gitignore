@@ -3,8 +3,7 @@ target/
 .idea
 netty-gateway.iml
 logs/
-*.DS_Store
+.DS_Store
 docker/apps
-src/main/.DS_Store
 docker/service-whitelist.xml
 
