@@ -1,27 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <service-whitelist>
     <service>com.today.api.order.service.OrderService2</service>
-    <service>com.today.api.dictionary.service.OpenDictionaryService</service>
-    <service>com.today.soa.idgen.service.IDService</service>
+    <service>com.today.api.stock.service.StockOpenService</service>
     <service>com.today.api.stock.service.StockService</service>
-    <service>com.today.api.inventory.service.AdminInventoryService</service>
-    <service>com.today.api.admin.service.AdminService</service>
-    <service>com.today.api.admin.service.OpenAdminService</service>
-    <service>com.today.api.admin.service.AminScheduledService</service>
-    <service>com.today.api.category.service.OpenCategoryService</service>
-    <service>com.today.api.layout.service.OpenLayoutService</service>
-    <service>com.today.api.skuprice.service.OpenSkuPriceService</service>
-    <service>com.today.api.purchase.service.PurchaseService</service>
-    <service>com.today.api.address.service.OpenAddressService</service>
-    <service>com.today.api.dailyorder.service.DailyOrderService</service>
+    <service>com.today.api.dailyorder.service.DailyOrderService2</service>
+    <service>com.today.api.php.service.PHPService</service>
+    <service>com.today.api.supplier.service.AdminSupplierService</service>
+    <service>com.today.api.finance.service.FinanceBaseService</service>
+    <service>com.today.api.purchase.query.service.Purchase2QueryService</service>
     <service>com.today.api.goods.service.OpenGoodsService</service>
-    <service>com.today.api.skuBuyingPrice.service.OpenSkuBuyingPriceService</service>
-    <service>com.today.api.supplier.service.OpenSupplierService</service>
+    <service>com.today.api.purchase.service.PurchaseScheduledService</service>
+    <service>com.today.api.dailystock.service.DailyStockService</service>
     <service>com.today.api.order.service.OrderQueryService</service>
-    <service>com.today.api.member.service.MemberService</service>
-    <service>com.today.api.purchase.query.service.PurchaseQueryService</service>
-    <service>com.today.api.category.service.AdminCategoryService</service>
+    <service>com.today.api.member.app.service.MemberServiceNew</service>
+    <service>com.today.api.purchase.service.OpenPurchaseService</service>
+    <service>com.today.service.stock.OpenStockServiceImpl</service>
+    <service>com.today.api.dictionary.service.OpenDictionaryService</service>
+    <service>com.today.api.layout.service.AdminLayoutService</service>
     <service>com.today.api.purchase.service.PurchaseSupplierService</service>
     <service>com.today.api.verifyorder.service.OrderVerifyService</service>
-    <service>com.github.dapeng.hello.service.HelloService</service>
+    <service>com.today.api.skuprice.service.OpenSkuPriceService</service>
+    <service>com.today.api.address.service.OpenAddressService</service>
+    <service>com.today.api.dailyorder.service.DailyOrderService</service>
+    <service>com.today.api.supplier.service.OpenSupplierService</service>
+    <service>com.today.api.stores.service.AdminStoresService</service>
+    <service>com.today.api.finance.service.CoopRemunerationService</service>
+    <service>com.today.api.admin.service.AminScheduledService</service>
+    <service>com.today.api.skuprice.service.AdminSkuPriceService</service>
+    <service>service:com.today.api.verifyorder.service.OrderVerifyService</service>
+    <service>com.today.api.financereport.service.ExportReportService</service>
+    <service>com.today.api.category.service.AdminCategoryService</service>
+    <service>com.today.soa.idgen.service.IDService</service>
+    <service>com.today.api.inventory.service.AdminInventoryService</service>
+    <service>com.today.api.admin.service.AdminService</service>
+    <service>com.today.api.order.service.AppOrderService</service>
+    <service>com.today.api.member.app.service.MemberAPPService</service>
+    <service>com.today.api.goods.service.AdminGoodsService</service>
+    <service>com.today.api.dictionary.service.AdminDictionaryService</service>
+    <service>com.today.api.finance.service.InvoiceService</service>
+    <service>com.today.api.purchase.query.service.PurchaseQueryService</service>
+    <service>com.today.api.capital.service.CapitalManagerService</service>
+    <service>com.today.api.memberAdmin.service.MemberAdminService</service>
+    <service>com.today.api.purchase.query.service.OpenPurchaseService</service>
+    <service>com.today.api.app.service.GoodsAppService</service>
+    <service>com.today.api.admin.service.OpenAdminService</service>
+    <service>com.today.api.category.service.OpenCategoryService</service>
+    <service>com.today.api.layout.service.OpenLayoutService</service>
+    <service>com.today.api.purchase.service.PurchaseService</service>
+    <service>com.today.api.skuBuyingPrice.service.OpenSkuBuyingPriceService</service>
+    <service>com.today.api.member.service.MemberService</service>
+    <service>com.today.api.journaldata.service.JournalDataService</service>
+    <service>com.today.api.skuBuyingPrice.service.AdminSkuBuyingPriceService</service>
 </service-whitelist>
