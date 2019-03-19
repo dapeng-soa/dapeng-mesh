@@ -59,9 +59,11 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
      * @param context request 请求上下文
      */
     private void authSecret(RequestContext context, ChannelHandlerContext ctx) throws Exception {
-        Set<String> list = WhiteListHandler.getServiceWhiteList();
-        if (!list.contains(context.service().get())) {
-            throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
+        if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
+            Set<String> list = WhiteListHandler.getServiceWhiteList();
+            if (!list.contains(context.service().get())) {
+                throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
+            }
         }
         Optional<String> serviceName = context.service();
         Optional<String> apiKey = context.apiKey();
