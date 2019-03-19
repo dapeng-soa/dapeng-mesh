@@ -27,7 +27,7 @@
     <service>com.today.api.finance.service.CoopRemunerationService</service>
     <service>com.today.api.admin.service.AminScheduledService</service>
     <service>com.today.api.skuprice.service.AdminSkuPriceService</service>
-    <service>service:com.today.api.verifyorder.service.OrderVerifyService</service>
+    <service>com.today.api.verifyorder.service.OrderVerifyService</service>
     <service>com.today.api.financereport.service.ExportReportService</service>
     <service>com.today.api.category.service.AdminCategoryService</service>
     <service>com.today.soa.idgen.service.IDService</service>
