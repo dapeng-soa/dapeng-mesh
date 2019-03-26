@@ -51,4 +51,5 @@
     <service>com.today.api.member.service.MemberService</service>
     <service>com.today.api.journaldata.service.JournalDataService</service>
     <service>com.today.api.skuBuyingPrice.service.AdminSkuBuyingPriceService</service>
+    <service>com.today.api.outward.service.OutwardService</service>
 </service-whitelist>
