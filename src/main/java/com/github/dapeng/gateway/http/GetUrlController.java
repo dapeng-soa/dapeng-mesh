@@ -2,6 +2,7 @@ package com.github.dapeng.gateway.http;
 
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.echo.EchoClient;
+import com.github.dapeng.gateway.auth.AuthWhiteUtils;
 import com.github.dapeng.gateway.http.match.Pair;
 import com.github.dapeng.gateway.http.match.UrlMappingResolver;
 import com.github.dapeng.gateway.util.DapengMeshCode;
@@ -92,4 +93,14 @@ public class GetUrlController {
         return new HttpResponseEntity(HttpProcessorUtils.logResponse(url, System.currentTimeMillis()), HttpResponseStatus.OK);
     }
 
+    /**
+     * 重新加载白名单 接口
+     *
+     * @param url {@link com.github.dapeng.gateway.util.Constants#DATA_RELOAD_WHITELIST}
+     * @return 服务端系统当前时间
+     */
+    public HttpResponseEntity reloadWhiteList(String url) {
+        AuthWhiteUtils.loadAuthWhiteConfig();
+        return new HttpResponseEntity(HttpProcessorUtils.logResponse(url, "白名单重新加载成功！"), HttpResponseStatus.OK);
+    }
 }

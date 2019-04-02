@@ -4,6 +4,7 @@ import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
+import com.github.dapeng.gateway.auth.AuthWhiteUtils;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import com.github.dapeng.gateway.netty.request.RequestContext;
@@ -31,18 +32,32 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         RequestContext context = (RequestContext) msg;
+
+        String serviceName = context.service().orElse("");
+        String methodName = context.method().orElse("");
+        String ipInfo = InvokeUtil.getIpAddress(context.request(), ctx);
+
+        //IP 限流  1秒钟 500次
+        if (!IpLimiterUtils.checkIpLimiter(ipInfo)) {
+            HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IpLimiterError), context.request(), HttpResponseStatus.OK);
+            return;
+        }
+
         try {
-            // POST FIRST
-            if (HttpMethod.POST.equals(context.httpMethod())) {
-                //鉴权
-                try {
-                    authSecret(context, ctx);
-                } catch (SoaException e) {
-                    HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(context.requestUrl(), e), context.request(), HttpResponseStatus.OK);
-                    return;
-                } catch (Exception e) {
-                    HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), context.request(), HttpResponseStatus.OK);
-                    return;
+            //是否鉴权
+            if (AuthWhiteUtils.isNeedAuth(serviceName, methodName)) {
+                // POST FIRST
+                if (HttpMethod.POST.equals(context.httpMethod())) {
+                    //鉴权
+                    try {
+                        authSecret(context, ctx);
+                    } catch (SoaException e) {
+                        HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapExCodeResponse(context.requestUrl(), e), context.request(), HttpResponseStatus.OK);
+                        return;
+                    } catch (Exception e) {
+                        HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), context.request(), HttpResponseStatus.OK);
+                        return;
+                    }
                 }
             }
             super.channelRead(ctx, context);

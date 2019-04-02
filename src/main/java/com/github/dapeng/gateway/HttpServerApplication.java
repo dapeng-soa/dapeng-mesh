@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway;
 
+import com.github.dapeng.gateway.auth.AuthWhiteUtils;
 import com.github.dapeng.gateway.config.ApiGateWayConfig;
 import com.github.dapeng.gateway.netty.NettyHttpServer;
 import org.slf4j.Logger;
@@ -16,6 +17,10 @@ public class HttpServerApplication {
 
     public static void main(String[] args) throws Exception {
         new ApiGateWayConfig().afterPropertiesSet();
+
+        //初始化白名单
+        AuthWhiteUtils.loadAuthWhiteConfig();
+
         NettyHttpServer server = new NettyHttpServer(9000);
         logLogBanner();
         server.registerShutdownHook();

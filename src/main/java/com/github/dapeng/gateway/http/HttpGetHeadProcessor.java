@@ -3,7 +3,6 @@ package com.github.dapeng.gateway.http;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.Constants;
 import com.github.dapeng.gateway.util.DapengMeshCode;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +20,23 @@ public class HttpGetHeadProcessor {
 
         switch (url) {
             case Constants.GET_HEALTH_CHECK_URL:
-
                 return controller.handlerHealth(url);
+
             case Constants.GET_CHECK:
-
                 return controller.getCheck(url);
+
             case Constants.ECHO_PREFIX:
-
                 return controller.echo(url);
+
             case Constants.SERVICE_LIST:
-
                 return controller.serviceList(url);
-            case Constants.SYS_TIME_SYNC:
 
+            case Constants.SYS_TIME_SYNC:
                 return controller.syncSysTime(url);
+
+            case Constants.DATA_RELOAD_WHITELIST:
+                return controller.reloadWhiteList(url);
+
             default:
                 if (url.contains(Constants.ECHO_PREFIX)) {
                     return controller.echo(url);

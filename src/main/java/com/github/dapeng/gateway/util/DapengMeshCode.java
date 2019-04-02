@@ -24,7 +24,8 @@ public enum DapengMeshCode implements SoaBaseCodeInterface {
     MeshUnknowEx("Err-Mesh-510", "ApiMesh未知异常"),
     AuthParameterEx("Err-Mesh-511", "请求校验参数为空,请检查 api-key,timestamp"),
     AuthSecretEx("Err-Mesh-512", "请求校验参数secret,secret2 至少有一个不为空"),
-    ParameterError("Err-Mesh-513", "请求参数 Request 部分参数不能为空");
+    ParameterError("Err-Mesh-513", "请求参数 Request 部分参数不能为空"),
+    IpLimiterError("Err-Mesh-514", "[被限流]请求过于频繁");
 
 
     private String code;

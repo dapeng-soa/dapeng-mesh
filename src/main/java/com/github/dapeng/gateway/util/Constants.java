@@ -29,5 +29,6 @@ public class Constants {
 
     public static final String COOKIES_PREFIX = "cookie_";
 
-
+    /*数据加载*/
+    public static final String DATA_RELOAD_WHITELIST = "/data/whitelist";
 }
