@@ -5,7 +5,6 @@ import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.gateway.auth.AuthWhiteUtils;
-import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
 import com.github.dapeng.gateway.netty.request.RequestContext;
 import com.github.dapeng.gateway.util.*;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -74,12 +72,13 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
      * @param context request 请求上下文
      */
     private void authSecret(RequestContext context, ChannelHandlerContext ctx) throws Exception {
-        if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
+       /* if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
             Set<String> list = WhiteListHandler.getServiceWhiteList();
             if (!list.contains(context.service().get())) {
                 throw new SoaException("Err-GateWay-006", "非法请求,请联系管理员!");
             }
-        }
+        }*/
+
         Optional<String> serviceName = context.service();
         Optional<String> apiKey = context.apiKey();
         Optional<String> secret = context.secret();
