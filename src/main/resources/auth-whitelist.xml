@@ -6,13 +6,17 @@
         <method>method3</method>
         <method>method4</method>
     </service>
-    <service serviceName="com.today.api.stock.service.test123">
+    <service serviceName="com.today.api.stock.service.test6666">
         <method>method5</method>
         <method>method6</method>
         <method>method7</method>
-        <method>method555</method>
+        <method>method666</method>
     </service>
-
-    <service serviceName="com.today.api.stock.service.helloService"/>
+    <service serviceName="com.today.api.member.app.service.MemberServiceNew">
+        <method>memberLuckDraw</method>
+        <method>queryScoreActivity</method>
+    </service>
+    <service serviceName="com.today.api.stock.service.helloService"></service>
+    <service serviceName="com.github.dapeng.hello.service.HelloService"></service>
 
 </service-whitelist>

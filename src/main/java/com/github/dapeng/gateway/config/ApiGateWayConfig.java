@@ -1,6 +1,5 @@
 package com.github.dapeng.gateway.config;
 
-import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.openapi.cache.ZkBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ public class ApiGateWayConfig {
             LOGGER.info("zk host in the environment is not found,setting it with spring boot application, host is {}", defaultHost);
         }
 
-        new ZkBootstrap().filterInitWhiteList(WhiteListHandler.initWhiteList());
+       // new ZkBootstrap().filterInitWhiteList(WhiteListHandler.initWhiteList());
+        new ZkBootstrap().init();
     }
 }

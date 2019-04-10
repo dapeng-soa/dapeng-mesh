@@ -31,9 +31,9 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         RequestContext context = (RequestContext) msg;
 
-        String serviceName = context.service().orElse("");
-        String methodName = context.method().orElse("");
-        String ipInfo = InvokeUtil.getIpAddress(context.request(), ctx);
+        String serviceName = context.service().orElse("").trim();
+        String methodName = context.method().orElse("").trim();
+        String ipInfo = InvokeUtil.getIpAddress(context.request(), ctx).trim();
 
         //IP 限流  1秒钟 500次
         if (!IpLimiterUtils.checkIpLimiter(ipInfo)) {
