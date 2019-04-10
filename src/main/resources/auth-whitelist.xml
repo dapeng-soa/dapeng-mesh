@@ -18,5 +18,6 @@
     </service>
     <service serviceName="com.today.api.stock.service.helloService"></service>
     <service serviceName="com.github.dapeng.hello.service.HelloService"></service>
+    <service serviceName="com.github.dapeng.hello.service.HelloService"></service>
 
 </service-whitelist>

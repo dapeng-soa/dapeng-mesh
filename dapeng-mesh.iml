@@ -23,22 +23,22 @@
     <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:2.7.8" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-open-api:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-client-netty:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-utils:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-registry-zookeeper:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-open-api:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-client-netty:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-utils:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-registry-zookeeper:2.1.2-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.7" level="project" />
     <orderEntry type="library" name="Maven: jline:jline:0.9.94" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.7.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.7.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.7.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-container-api:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-router:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-json:2.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-core:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.7.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-container-api:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-router:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-json:2.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.dapeng-soa:dapeng-core:2.1.2-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.simpleframework:simple-xml:2.7.1" level="project" />
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: stax:stax:1.2.0" level="project" />

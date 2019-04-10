@@ -14,18 +14,16 @@ import com.github.dapeng.gateway.netty.request.RequestParser;
 import com.github.dapeng.json.OptimizedMetadata;
 import com.github.dapeng.openapi.cache.ServiceCache;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import static com.github.dapeng.gateway.util.InvokeUtil.*;
+import static com.github.dapeng.gateway.util.InvokeUtil.getCookiesFromParameter;
 
 /**
  * desc: PostUtil
@@ -141,6 +139,7 @@ public class PostUtil {
 
     private static void fillInvocationCtx(InvocationContext invocationCtx, FullHttpRequest req) {
         Map<String, List<String>> parameters = RequestParser.fastParseToMap(req);
+        InvocationContext.InvocationContextProxy invocationCtxProxy = InvocationContextImpl.Factory.getInvocationContextProxy();
         if (parameters.containsKey("calleeIp")) {
             invocationCtx.calleeIp(IPUtils.transferIp(parameters.get("calleeIp").get(0)));
         }
@@ -155,13 +154,25 @@ public class PostUtil {
 
         if (parameters.containsKey("userId")) {
             invocationCtx.userId(Long.valueOf(parameters.get("userId").get(0)));
+        }else{
+            if (invocationCtxProxy.userId().isPresent()) {
+                invocationCtx.userId(invocationCtxProxy.userId().get());
+            }
         }
 
         if (parameters.containsKey("operatorId")) {
             invocationCtx.operatorId(Long.valueOf(parameters.get("operatorId").get(0)));
         }
 
-        InvocationContext.InvocationContextProxy invocationCtxProxy = InvocationContextImpl.Factory.getInvocationContextProxy();
+
+        if (invocationCtxProxy.sessionTid().isPresent()) {
+            invocationCtx.sessionTid(invocationCtxProxy.sessionTid().get());
+        }
+
+        if (invocationCtxProxy.userIp().isPresent()) {
+            invocationCtx.userIp(invocationCtxProxy.userIp().get());
+        }
+
         invocationCtx.cookies(invocationCtxProxy.cookies());
     }
 
