@@ -6,7 +6,7 @@
 
     <groupId>com.github.dapeng-soa</groupId>
     <artifactId>dapeng-mesh</artifactId>
-    <version>2.1.1-auth</version>
+    <version>matser-white</version>
 
 
     <properties>
@@ -149,7 +149,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.10</version>
                 <configuration>
-                    <imageName>harbor.today36524.td/basic/dapeng-mesh:${version}</imageName>
+                    <imageName>harbor.today36524.td/basic/dapeng-mesh-white:${version}</imageName>
                     <dockerDirectory>${basedir}/docker</dockerDirectory>
                 </configuration>
                 <executions>
