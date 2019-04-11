@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static com.github.dapeng.gateway.util.SysEnvUtil.MESH_REQUEST_LIMIT_ENABLE;
+
 /**
  * @author maple 2018.08.23 上午10:01
  */
@@ -35,10 +37,13 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         String methodName = context.method().orElse("").trim();
         String ipInfo = InvokeUtil.getIpAddress(context.request(), ctx).trim();
 
-        //IP 限流  1秒钟 500次
-        if (!IpLimiterUtils.checkIpLimiter(ipInfo)) {
-            HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IpLimiterError), context.request(), HttpResponseStatus.OK);
-            return;
+        //是否开启限流
+        if(MESH_REQUEST_LIMIT_ENABLE){
+            //IP 限流  1秒钟 500次
+            if (!IpLimiterUtils.checkIpLimiter(ipInfo)) {
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IpLimiterError), context.request(), HttpResponseStatus.OK);
+                return;
+            }
         }
 
         try {
