@@ -46,6 +46,9 @@ public class HttpProcessorUtils {
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
             response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
 
+            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS,"Origin, X-Requested-With, Content-Type, Accept");
+            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN,"*");
+
             if (request == null) {
                 ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             } else {
