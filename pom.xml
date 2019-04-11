@@ -6,7 +6,7 @@
 
     <groupId>com.github.dapeng-soa</groupId>
     <artifactId>dapeng-mesh</artifactId>
-    <version>matser-white</version>
+    <version>master-white</version>
 
 
     <properties>
