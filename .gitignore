@@ -2,6 +2,7 @@
 target/
 .idea
 netty-gateway.iml
+dapeng-mesh.iml
 logs/
 .DS_Store
 docker/apps
