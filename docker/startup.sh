@@ -5,7 +5,7 @@ export PATH=$JVM_HOME/bin:$PATH
 
 
 # 程序名称
-APP_NAME=dapeng-mesh
+APP_NAME=dapeng-mesh-white
 
 # 当前时间 20180906120201
 CURR_DATE=`date +%Y%m%d%H%M%S`
