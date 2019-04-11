@@ -141,7 +141,8 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.10</version>
                 <configuration>
-                    <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:${version}</imageName>
+                  <!--  <imageName>docker.today36524.com.cn:5000/basic/dapeng-mesh:${version}</imageName>-->
+                    <imageName>harbor.today36524.td/basic/dapeng-mesh:${version}</imageName>
                     <dockerDirectory>${basedir}/docker</dockerDirectory>
                 </configuration>
                 <executions>
