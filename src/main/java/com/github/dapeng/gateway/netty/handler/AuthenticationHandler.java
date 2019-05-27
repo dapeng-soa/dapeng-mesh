@@ -11,7 +11,6 @@ import com.github.dapeng.gateway.util.*;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         try {
             //是否鉴权
             if (AuthWhiteUtils.isNeedAuth(serviceName, methodName)) {
-                // POST FIRST
+                /*// POST FIRST
                 if (HttpMethod.POST.equals(context.httpMethod())) {
                     //鉴权
                     try {
@@ -61,7 +60,9 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
                         HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.AuthSecretError), context.request(), HttpResponseStatus.OK);
                         return;
                     }
-                }
+                }*/
+                HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.RequestNotInWhiteList), context.request(), HttpResponseStatus.OK);
+                return;
             }
             super.channelRead(ctx, context);
         } catch (Exception e) {
