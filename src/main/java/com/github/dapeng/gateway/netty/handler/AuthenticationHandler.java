@@ -36,8 +36,9 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         String methodName = context.method().orElse("").trim();
         String ipInfo = InvokeUtil.getIpAddress(context.request(), ctx).trim();
 
+        logger.info("service[{}]:version[{}]:method[{}]   userIp:{}", serviceName, context.version(), methodName, ipInfo);
         //是否开启限流
-        if(MESH_REQUEST_LIMIT_ENABLE){
+        if (MESH_REQUEST_LIMIT_ENABLE) {
             //IP 限流  1秒钟 500次
             if (!IpLimiterUtils.checkIpLimiter(ipInfo)) {
                 HttpProcessorUtils.sendHttpResponse(ctx, HttpProcessorUtils.wrapErrorResponse(DapengMeshCode.IpLimiterError), context.request(), HttpResponseStatus.OK);
