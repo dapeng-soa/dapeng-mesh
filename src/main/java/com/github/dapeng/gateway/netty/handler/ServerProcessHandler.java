@@ -46,7 +46,6 @@ public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestCon
 
         HttpMethod httpMethod = context.httpMethod();
         InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
-        logger.info("serverProcessHandler ctx attr: {}",ctx.channel().attr(AttributeKey.valueOf("sessionTid")).get());
         invocationCtx.sessionTid((Long)ctx.channel().attr(AttributeKey.valueOf("sessionTid")).get());
         if (HttpMethod.POST.equals(httpMethod)) {
             postHandler.handlerPostRequest(context, ctx);

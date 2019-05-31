@@ -93,7 +93,6 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
             Long sessionTid = DapengUtil.generateTid();
             invocationCtx.sessionTid(sessionTid);
             ctx.channel().attr(AttributeKey.valueOf("sessionTid")).set(sessionTid);
-            logger.info("authenticationHandler ctx attr: {}",ctx.channel().attr(AttributeKey.valueOf("sessionTid")).get());
             String responseCode = PostUtil.postSync(Constants.ADMIN_SERVICE_NAME, Constants.ADMIN_VERSION_NAME, Constants.ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
 
             //没有成功的错误
