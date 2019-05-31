@@ -1,5 +1,6 @@
 package com.github.dapeng.gateway.netty.handler;
 
+import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaException;
 import com.github.dapeng.gateway.http.HttpGetHeadProcessor;
 import com.github.dapeng.gateway.http.HttpPostProcessor;
@@ -11,6 +12,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,8 @@ public class ServerProcessHandler extends SimpleChannelInboundHandler<RequestCon
     private void dispatchRequest(RequestContext context, ChannelHandlerContext ctx) throws SoaException {
 
         HttpMethod httpMethod = context.httpMethod();
-
+        InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
+        invocationCtx.sessionTid((Long)ctx.channel().attr(AttributeKey.valueOf("sessionTid")).get());
         if (HttpMethod.POST.equals(httpMethod)) {
             postHandler.handlerPostRequest(context, ctx);
             return;

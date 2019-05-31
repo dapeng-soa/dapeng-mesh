@@ -3,6 +3,7 @@ package com.github.dapeng.gateway.netty.handler;
 import com.github.dapeng.core.InvocationContextImpl;
 import com.github.dapeng.core.SoaCode;
 import com.github.dapeng.core.SoaException;
+import com.github.dapeng.core.helper.DapengUtil;
 import com.github.dapeng.core.helper.SoaSystemEnvProperties;
 import com.github.dapeng.gateway.auth.WhiteListHandler;
 import com.github.dapeng.gateway.http.HttpProcessorUtils;
@@ -13,6 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +89,10 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         }
 
         try {
+            InvocationContextImpl invocationCtx = (InvocationContextImpl) InvocationContextImpl.Factory.currentInstance();
+            Long sessionTid = DapengUtil.generateTid();
+            invocationCtx.sessionTid(sessionTid);
+            ctx.channel().attr(AttributeKey.valueOf("sessionTid")).set(sessionTid);
             String responseCode = PostUtil.postSync(Constants.ADMIN_SERVICE_NAME, Constants.ADMIN_VERSION_NAME, Constants.ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
 
             //没有成功的错误
