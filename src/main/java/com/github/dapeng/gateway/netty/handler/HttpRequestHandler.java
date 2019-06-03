@@ -21,7 +21,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-
+        if ("/favicon.ico".equals(request.uri())){
+            return;
+        }
         //请求计数 +1
         HttpProcessorUtils.getRequestCounter().incrementAndGet();
         RequestContext context = new RequestContext();
