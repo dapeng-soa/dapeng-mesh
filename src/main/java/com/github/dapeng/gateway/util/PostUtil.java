@@ -162,7 +162,9 @@ public class PostUtil {
         }
 
         InvocationContext.InvocationContextProxy invocationCtxProxy = InvocationContextImpl.Factory.getInvocationContextProxy();
-        invocationCtx.cookies(invocationCtxProxy.cookies());
+        if(invocationCtxProxy!=null){
+            invocationCtx.cookies(invocationCtxProxy.cookies());
+        }
     }
 
     private static int getEnvTimeOut() {
