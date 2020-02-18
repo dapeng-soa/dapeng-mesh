@@ -64,7 +64,7 @@ public class NettyHttpServer {
         HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
         ServerProcessHandler serverProcessHandler = new ServerProcessHandler();
 
-        AuthenticationHandler authenticationHandler = Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE) ? new AuthenticationHandler() : null;
+        AuthenticationHandler authenticationHandler = Boolean.parseBoolean(SysEnvUtil.OPEN_AUTH_ENABLE) ? new AuthenticationHandler() : null;
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -82,7 +82,7 @@ public class NettyHttpServer {
                             // 服务端业务逻辑
                             ph.addLast("requestHandler", httpRequestHandler);
 
-                            if (Boolean.valueOf(SysEnvUtil.OPEN_AUTH_ENABLE)) {
+                            if (Boolean.parseBoolean(SysEnvUtil.OPEN_AUTH_ENABLE)) {
                                 ph.addLast("authenticationHandler", authenticationHandler);
                             }
                             ph.addLast("serverHandler", serverProcessHandler);
