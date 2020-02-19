@@ -32,12 +32,19 @@ curl 'https://127.0.0.1:800/api/com.to.serviceName/1.0.0/methodName.html?cookieS
 --data 'parameter={"body":{"code":"SKU_FINANCE_TYPE"}}'
 
 -- 返回包：
-{"success":
+{"success":  -- 对应服务返回的数据
 	[ {	"id":40894,"parentCode":"", ......},
 		......
 	]
-,"status":1
+,"status":1  -- status 为1 表示请求成功
 }
+
+失败返回包：
+{"responseCode":"error-code", 
+ "responseMsg":"error-message", 
+ "success": {}, 
+ "status":0	-- status 为 0 表示请求失败
+ }
 ```
 
 ## 携带 APIKey
