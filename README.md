@@ -25,3 +25,25 @@ soa_open_auth_enable=false
 soa.zookeeper.host=192.168.10.12:2181
 
 ```
+
+## 请求示例，不携带API Key
+```
+curl 'https://127.0.0.1:800/api/com.to.serviceName/1.0.0/methodName.html?cookieStoreId=1234' \  
+--data 'parameter={"body":{"code":"SKU_FINANCE_TYPE"}}'
+
+-- 返回包：
+{"success":
+	[ {	"id":40894,"parentCode":"", ......},
+		......
+	]
+,"status":1
+}
+```
+
+## 携带 APIKey
+```
+curl 'http://gateway.xxx.cn/api/{serviceName}/{version}/{methodName}/{apikey}?timestamp=1525946628000&secret2=xxxxxx'
+--data 'parameter={"body":{"code":"SKU_FINANCE_TYPE"}}'
+
+secret2=MD5(apikey+tmiestamp+password+parameter)
+```
