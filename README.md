@@ -17,6 +17,8 @@ soa.open.auth.enable=false
 //env
 soa_open_auth_enable=false
 ```
+
+>鉴权方案见: [服务网关鉴权方案](https://github.com/dapeng-soa/dapeng-soa/wiki/dapeng-mesh%E9%89%B4%E6%9D%83%E6%96%B9%E6%A1%88)
 ### 选择 zookeeper 连接
 
 ```
