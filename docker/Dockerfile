@@ -1,5 +1,4 @@
-#FROM docker.today36524.com.cn:5000/base/openjdk:server-jre8
-FROM harbor.today36524.td/base/openjdk:server-jre8
+FROM dapengsoa/openjdk:java8-with-arthas
 
 RUN mkdir /dapeng-mesh && mkdir /dapeng-mesh/logs
 COPY  ./startup.sh  /dapeng-mesh/
