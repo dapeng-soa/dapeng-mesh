@@ -87,7 +87,7 @@ public class AuthenticationHandler extends ChannelInboundHandlerAdapter {
         }
 
         try {
-            String responseCode = PostUtil.postSync(Constants.ADMIN_SERVICE_NAME, Constants.ADMIN_VERSION_NAME, Constants.ADMIN_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
+            String responseCode = PostUtil.postSync(Constants.AUTH_SERVICE_NAME, Constants.AUTH_VERSION_NAME, Constants.AUTH_METHOD_NAME, requestJson, context.request(), InvokeUtil.getCookiesFromParameter(context));
 
             //没有成功的错误
             if (!SoaSystemEnvProperties.SOA_NORMAL_RESP_CODE.equals(responseCode)) {

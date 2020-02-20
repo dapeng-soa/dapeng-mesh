@@ -19,6 +19,10 @@ soa_open_auth_enable=false
 ```
 
 >鉴权方案见: [服务网关鉴权方案](https://github.com/dapeng-soa/dapeng-soa/wiki/dapeng-mesh%E9%89%B4%E6%9D%83%E6%96%B9%E6%A1%88)
+
+> 如果开启鉴权,需要启动 dapeng-mesh-auth 服务进行认证
+> 详情请见: [dapeng-mesh-auth](https://github.com/dapeng-soa/dapeng-mesh-auth)
+
 ### 选择 zookeeper 连接
 
 ```
@@ -28,7 +32,7 @@ soa.zookeeper.host=192.168.10.12:2181
 
 ## 请求示例，不携带API Key
 ```
-curl 'https://127.0.0.1:800/api/com.to.serviceName/1.0.0/methodName.html?cookieStoreId=1234' \  
+curl 'https://127.0.0.1:800/api/com.to.serviceName/1.0.0/methodName.html?cookieStoreId=1234' \
 --data 'parameter={"body":{"code":"SKU_FINANCE_TYPE"}}'
 
 -- 返回包：
@@ -40,9 +44,9 @@ curl 'https://127.0.0.1:800/api/com.to.serviceName/1.0.0/methodName.html?cookieS
 }
 
 失败返回包：
-{"responseCode":"error-code", 
- "responseMsg":"error-message", 
- "success": {}, 
+{"responseCode":"error-code",
+ "responseMsg":"error-message",
+ "success": {},
  "status":0	-- status 为 0 表示请求失败
  }
 ```
