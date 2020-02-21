@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,11 +85,34 @@ public class UrlMappingResolver {
         }
         UrlArgumentHolder holder = doResolveArgument(apiKey);
 
-        String timestamp = RequestParser.fastParseParam(request, "timestamp");
-        String secret = RequestParser.fastParseParam(request, "secret");
-        String secret2 = RequestParser.fastParseParam(request, "secret2");
-        String parameter = RequestParser.fastParseParam(request, "parameter");
+        String timestamp = null;
+        String secret = null;
+        String secret2 = null;
+        Map<String, String> argumentMap = holder.getArgumentMap();
 
+        if (argumentMap.size() > 0) {
+            if (argumentMap.containsKey("timestamp")) {
+                timestamp = argumentMap.get("timestamp");
+            }
+            if (argumentMap.containsKey("secret")) {
+                secret = argumentMap.get("secret");
+            }
+            if (argumentMap.containsKey("secret2")) {
+                secret2 = argumentMap.get("secret2");
+            }
+        }
+
+        if (timestamp == null) {
+            timestamp = RequestParser.fastParseParam(request, "timestamp");
+        }
+        if (secret == null) {
+            secret = RequestParser.fastParseParam(request, "secret");
+        }
+        if (secret2 == null) {
+            secret2 = RequestParser.fastParseParam(request, "secret2");
+        }
+
+        String parameter = RequestParser.fastParseParam(request, "parameter");
         context.urlPrefix(prefix);
         context.service(serviceName);
         context.version(versionName);
