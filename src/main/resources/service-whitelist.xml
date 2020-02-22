@@ -11,7 +11,7 @@
     <service>com.today.api.goods.service.OpenGoodsService</service>
     <service>com.today.api.purchase.service.PurchaseScheduledService</service>
     <service>com.today.api.dailystock.service.DailyStockService</service>
-    <service>com.today.api.order.service.OrderQueryService</service>
+    <service>com.today.api.order.service.OrderQuerchsyService</service>
     <service>com.today.api.member.app.service.MemberServiceNew</service>
     <service>com.today.api.purchase.service.OpenPurchaseService</service>
     <service>com.today.service.stock.OpenStockServiceImpl</service>
